@@ -65,12 +65,13 @@ def surface_density(r, amplitude1, r_eff, n, amplitude2, r_d):
 
 path = ['low_master_iso', 'low_padoan_iso', 'low_semenov_iso', 'low_evans_iso']
 path2 = ['med_master_iso', 'med_padoan_iso', 'med_semenov_iso', 'med_evans_iso']
-simulation = ['Threshold-based model'+'\n'+'Low Resolution', 'Padoan et al. (2012)'+'\n'+'Low Resolution','Semenov et al. (2016)'+'\n'+'Low Resolution', 'Evans et al. (2022)'+'\n'+'Low Resolution', 'Threshold-based model'+'\n'+'Medium Resolution', 'Padoan et al. (2012)'+'\n'+'Medium Resolution','Semenov et al. (2016)'+'\n'+'Medium Resolution', 'Evans et al. (2022)'+'\n'+'Medium Resolution']
+path3 = ['high_evans_iso', 'high_padoan_iso', 'high_semenov_iso', 'high_evans_iso']
+simulation = ['Threshold-based model'+'\n'+'Low Resolution', 'Padoan et al. (2012)'+'\n'+'Low Resolution','Semenov et al. (2016)'+'\n'+'Low Resolution', 'Evans et al. (2022)'+'\n'+'Low Resolution', 'Threshold-based model'+'\n'+'Medium Resolution', 'Padoan et al. (2012)'+'\n'+'Medium Resolution','Semenov et al. (2016)'+'\n'+'Medium Resolution', 'Evans et al. (2022)'+'\n'+'Medium Resolution','Threshold-based model'+'\n'+'High Resolution', 'Padoan et al. (2012)'+'\n'+'High Resolution','Semenov et al. (2016)'+'\n'+'High Resolution', 'Evans et al. (2022)'+'\n'+'High Resolution']
 
 ######################################################################################################
 
-fig = plt.figure(figsize=(20,10))
-gs = gridspec.GridSpec(2, 4)
+fig = plt.figure(figsize=(20,15))
+gs = gridspec.GridSpec(3, 4)
 gs.update(hspace=0.00, wspace=0.00)
 
 #fig.suptitle('Surface density fit', fontsize = 16)

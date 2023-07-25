@@ -36,50 +36,40 @@ plt.rcParams['legend.shadow'] = False
 plt.rcParams['legend.edgecolor'] = 'darkgray'
 plt.rcParams['patch.linewidth'] = 1
 
-s = pynbody.load('../low_master_iso/low.01000')
+
+s = pynbody.load('../high_master_iso/high.01000')
 s.physical_units()
 s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s.s['n'] = s.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s2 = pynbody.load('../med_master_iso/med.01000')
+
+s2 = pynbody.load('../high_padoan_iso/high.01000')
 s2.physical_units()
 s2.g['n'] = s2.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s2.s['n'] = s2.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s3 = pynbody.load('../high_evans_iso/high.01000')
+
+s3 = pynbody.load('../high_semenov_iso/high.01000')
 s3.physical_units()
 s3.g['n'] = s3.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s3.s['n'] = s3.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s4 = pynbody.load('../low_padoan_iso/low.01000')
+
+s4 = pynbody.load('../high_master_iso/high.01000')
 s4.physical_units()
 s4.g['n'] = s4.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s4.s['n'] = s4.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s5 = pynbody.load('../med_padoan_iso/med.01000')
-s5.physical_units()
-s5.g['n'] = s5.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s5.s['n'] = s5.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s6 = pynbody.load('../high_padoan_iso/high.01000')
-s6.physical_units()
-s6.g['n'] = s6.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s6.s['n'] = s6.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-print(s5.g['n'].max())
-print(s6.g['n'].max())
-key = [s.g['n'], s2.g['n'], s3.g['n'], s4.g['n'], s5.g['n'], s6.g['n'], s.g['n'], s2.g['n'], s3.g['n'], s4.g['n'], s5.g['n'], s6.g['n']]
-x = [s.g['x'], s2.g['x'], s3.g['x'], s4.g['x'], s5.g['x'], s6.g['x'], s.g['x'], s2.g['x'], s3.g['x'], s4.g['x'], s5.g['x'], s6.g['x']]
-y = [s.g['y'], s2.g['y'], s3.g['y'], s4.g['y'], s5.g['x'], s6.g['x'], s.g['y'], s2.g['y'], s3.g['y'], s4.g['y'], s5.g['y'], s6.g['y']]
-titlelist = ['a) Threshold-based model'+'\n'+'Low Resolution', 'b) Threshold-based model' + '\n' + 'Medium Resolution', 'c) Threshold-based model' + '\n' + 'High Resolution', 'd) Padoan et al. (2012)'+'\n'+ 'Low Resolution', 'e) Padoan et al. (2012)'+'\n'+'Medium Resolution', 'f) Padoan et al. (2012)' + '\n' + 'High Resolution', '', '', '', '', '', '']
 
-fig = plt.figure(figsize = (16,3.73))
-gs0 = gd.GridSpec(2, 6, figure=fig, height_ratios = [1, 0.258], width_ratios = [1, 1, 1, 1, 1, 1.072])
+key = [s.g['n'], s2.g['n'], s3.g['n'], s4.g['n'], s.g['n'], s2.g['n'], s3.g['n'], s4.g['n']]
+x = [s.g['x'], s2.g['x'], s3.g['x'], s4.g['x'], s.g['x'], s2.g['x'], s3.g['x'], s4.g['x']]
+y = [s.g['y'], s2.g['y'], s3.g['y'], s4.g['y'], s.g['y'], s2.g['y'], s3.g['y'], s4.g['y']]
+titlelist = ['a) Threshold-based model', 'b) Padoan et al. (2012)','c) Semenov et al. (2016)', 'd) Evans et al. (2022)', '', '', '', '']
+fig = plt.figure(figsize = (12,3.73))
+gs0 = gd.GridSpec(2, 4, figure=fig, height_ratios = [1, 0.258], width_ratios = [1, 1, 1, 1.072])
 gs0.update(hspace=0.00, wspace=0.00)
 
 
-for n in range(6):
+for n in range(4):
     ax = fig.add_subplot(gs0[n])
     #print(s2.s['n'].max())
     #print(s2.s['n'].min())
     #print(s2.s['x'].max())
-    hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=500, range = ((-50, 50), (-50,50)))
+    hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
     im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', vmin = -1.9, vmax = 5)
-    if n == 5:
+    if n == 3:
         divider = make_axes_locatable(ax)
         cax = divider.append_axes('right', size = '5%', pad = 0.05)
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'log(n) [particles $cm^{-3}$]', size=14)
@@ -94,24 +84,22 @@ for n in range(6):
     ax.set_ylim(-19.99, 19.99)
     ax.set_aspect(1./ax.get_data_ratio())
 
-for n in range(6, 12):
+for n in range(4, 8):
     ax = fig.add_subplot(gs0[n])
     pynbody.analysis.angmom.sideon(s)
     pynbody.analysis.angmom.sideon(s2)
     pynbody.analysis.angmom.sideon(s3)
     pynbody.analysis.angmom.sideon(s4)
-    pynbody.analysis.angmom.sideon(s5)
-    pynbody.analysis.angmom.sideon(s6)
     base = plt.gca().transData
     rot = transforms.Affine2D().rotate_deg(90)
-    hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=700, range = ((-50, 50), (-50,50)))
-    im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmin = 0, vmax = 5)
+    hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
+    im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmin = -2, vmax = 5)
     
-    if n == 11:
+    if n == 7:
         divider = make_axes_locatable(ax)
         cax = divider.append_axes('right', size = '5%', pad = 0.05)
         fig.colorbar(im, cax = cax, orientation='vertical')
-    if n == 6:
+    if n == 4:
         ax.set_ylabel('z [kpc]', fontsize = 14)
     else:
         ax.set_yticklabels([])
@@ -121,6 +109,6 @@ for n in range(6, 12):
     ax.set_xlim(-19.99, 19.99)
     ax.set_ylim(-5, 5)
 
-plt.savefig('density_iso_res_com.pdf', bbox_inches='tight')
+plt.savefig('Gas_iso_com_all_high.pdf', bbox_inches='tight')
 plt.clf()
 

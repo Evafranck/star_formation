@@ -36,77 +36,85 @@ plt.rcParams['legend.shadow'] = False
 plt.rcParams['legend.edgecolor'] = 'darkgray'
 plt.rcParams['patch.linewidth'] = 1
 
-#s = pynbody.load('/home/hd/hd_hd/hd_fd249/simulation/agora/low_padoan_cos/g1.37e11.2x2.std')
-#s.physical_units()
-s = pynbody.load('../low_padoan_iso/LOW.bin')
-s2 = pynbody.load('../med_padoan_iso/MED.bin')
-s3 = pynbody.load('../high_padoan_iso/HI.bin')
-s.physical_units()
-s2.physical_units()
-s3.physical_units()
 
+s_ = pynbody.load('../high_evans_iso/high.01000')
+s_.physical_units()
+new = f.LowPass('age', s_.properties['time'].in_units('Gyr'))
+s = s_.s[new]
+s2_ = pynbody.load('../high_padoan_iso/high.01000')
+s2_.physical_units()
+new = f.LowPass('age', s2_.properties['time'].in_units('Gyr'))
+s2 = s2_.s[new]
 s.s['n'] = s.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
 s2.s['n'] = s2.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-s3.s['n'] = s3.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
 
-#key = [s.g['n'], s2.g['n']]
-#x = [s.g['x'], s2.g['x']]
-#y = [s.g['y'], s2.g['y']]
-titlelist = ['a) Low Resolved Isolated Simulation','b) Medium Resolution Isolated Simulation', 'High Resolution Isolated Simulation','','','','Initial star density','Initial gas density', 'Initial star density']
-fig = plt.figure(figsize = (18,10))
-gs0 = gd.GridSpec(2, 3, figure=fig, height_ratios = [1, 0.25], width_ratios = [1, 1 ,1.058])
+s3_ = pynbody.load('../high_semenov_iso/high.01000')
+s3_.physical_units()
+new = f.LowPass('age', s3_.properties['time'].in_units('Gyr'))
+s3 = s3_.s[new]
+s4_ = pynbody.load('../high_evans_iso/high.01000')
+s4_.physical_units()
+new = f.LowPass('age', s4_.properties['time'].in_units('Gyr'))
+s4 = s4_.s[new]
+s3.s['n'] = s3.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
+s4.s['n'] = s4.s['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
+
+key = [s.s['n'], s2.s['n'], s3.s['n'], s4.s['n'], s.s['n'], s2.s['n'], s3.s['n'], s4.s['n']]
+x = [s.s['x'], s2.s['x'], s3.s['x'], s4.s['x'], s.s['x'], s2.s['x'], s3.s['x'], s4.s['x']]
+y = [s.s['y'], s2.s['y'], s3.s['y'], s4.s['y'], s.s['y'], s2.s['y'], s3.s['y'], s4.s['y']]
+titlelist = ['a) Threshold-based model', 'b) Padoan et al. (2012)','c) Semenov et al. (2016)', 'd) Evans et al. (2022)', '', '', '', '']
+fig = plt.figure(figsize = (12,3.73))
+gs0 = gd.GridSpec(2, 4, figure=fig, height_ratios = [1, 0.258], width_ratios = [1, 1, 1, 1.072])
 gs0.update(hspace=0.00, wspace=0.00)
-    
-for n in range(3): 
+
+
+for n in range(4):
     ax = fig.add_subplot(gs0[n])
     #print(s2.s['n'].max())
     #print(s2.s['n'].min())
     #print(s2.s['x'].max())
-    hist1, xbin, ybin = np.histogram2d(s.s['x'], s.s['y'],weights=s.s['n'], bins=400, range = ((-50, 50), (-50,50)))
-    hist2, xbin, ybin = np.histogram2d(s2.s['x'], s2.s['y'],weights=s2.s['n'], bins=400, range = ((-50, 50), (-50,50)))
-    hist3, xbin, ybin = np.histogram2d(s3.s['x'], s3.s['y'],weights=s3.s['n'], bins=400, range = ((-50, 50), (-50,50)))
-    hist = [hist1, hist2, hist3]
-    im = ax.imshow(np.log10(hist[n]), extent=(-50,50,-50,50), cmap='CMRmap_r', vmin = -1.9, vmax = 6)
-    if n == 0:
-        ax.set_ylabel('y [kpc]', fontsize = 14)
-    else:
-        ax.set_yticklabels([])
-    if n == 1:
+    hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
+    im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', vmin = 0.1, vmax = 5)
+    if n == 3:
         divider = make_axes_locatable(ax)
         cax = divider.append_axes('right', size = '5%', pad = 0.05)
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'log(n) [particles $cm^{-3}$]', size=14)
-#hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=100, range = ((-50, 50), (-50,50)
- #   hist3, xbin, ybin = np.histogram2d(s3.s['x'], s3.s['y'],weights=s3.s['n'], bins=400, range = ((-50, 50), (-50,50)))
-    ax.set_title(titlelist[n], fontsize = 13)
+    if n == 0:    
+        ax.set_ylabel('y [kpc]', fontsize = 14)
+    else:
+        ax.set_yticklabels([])
+    
+    ax.set_title(titlelist[n], fontsize = 11)
     ax.set_xlabel('x [kpc]', fontsize = 14)
     ax.set_xlim(-19.99, 19.99)
     ax.set_ylim(-19.99, 19.99)
     ax.set_aspect(1./ax.get_data_ratio())
 
-for n in range (3, 6):
+for n in range(4, 8):
     ax = fig.add_subplot(gs0[n])
     pynbody.analysis.angmom.sideon(s)
     pynbody.analysis.angmom.sideon(s2)
     pynbody.analysis.angmom.sideon(s3)
+    pynbody.analysis.angmom.sideon(s4)
     base = plt.gca().transData
     rot = transforms.Affine2D().rotate_deg(90)
-    hist1, xbin, ybin = np.histogram2d(s.s['x'], s.s['y'],weights=s.s['n'], bins=400, range = ((-50, 50), (-50,50)))
-    hist2, xbin, ybin = np.histogram2d(s2.s['x'], s2.s['y'],weights=s2.s['n'], bins=400, range = ((-50, 50), (-50,50)))
-    hist3, xbin, ybin = np.histogram2d(s3.s['x'], s3.s['y'],weights=s3.s['n'], bins=400, range = ((-50, 50), (-50,50)))
-    hist = [hist1, hist2, hist3]
-    im = ax.imshow(np.log10(hist[n-3]), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmin = -2, vmax = 6)
-    if n == 3:
-        ax.set_ylabel('y [kpc]', fontsize = 14)
-    else:
-        ax.set_yticklabels([])
-    if n == 4:
+    hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
+    im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmin = 0, vmax = 5)
+    
+    if n == 7:
         divider = make_axes_locatable(ax)
         cax = divider.append_axes('right', size = '5%', pad = 0.05)
-        fig.colorbar(im, cax = cax, orientation='vertical')    
-    ax.set_title(titlelist[n], fontsize = 11)
+        fig.colorbar(im, cax = cax, orientation='vertical')
+    if n == 4:
+        ax.set_ylabel('z [kpc]', fontsize = 14)
+    else:
+        ax.set_yticklabels([])
+
+    #ax.set_title(titlelist[n], fontsize = 11)
     ax.set_xlabel('x [kpc]', fontsize = 14)
     ax.set_xlim(-19.99, 19.99)
     ax.set_ylim(-5, 5)
-plt.savefig('density_IC.pdf', bbox_inches='tight')
+
+plt.savefig('new_stars_iso_com_all_high.pdf', bbox_inches='tight')
 plt.clf()
 
