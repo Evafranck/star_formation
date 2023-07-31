@@ -42,17 +42,24 @@ y = []
 
 def load_sim(mod, res):
     s = pynbody.load('../' + res + '_' + mod + '_iso/' + res + '.01000')
+    pynbody.analysis.angmom.faceon(s)
     s.physical_units()
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
     key.append(s.g['n'])
     x.append(s.g['x'])
     y.append(s.g['y'])
+    print(len(key))
+    print(key[0][0])
     pynbody.analysis.angmom.sideon(s)
     key.append(s.g['n'])
     x.append(s.g['x'])
     y.append(s.g['y'])
+    print(len(key))
+    print(key[0][0])
+    pynbody.analysis.angmom.faceon(s)
 
-model = ['master', 'evans', 'padoan', 'semenov']
+
+model = ['evans', 'padoan', 'semenov', 'evans']
 resolution = ['low', 'med', 'high']
 for m in model:
     for r in resolution:
@@ -64,43 +71,57 @@ titlelist = [r'a) Threshold-based model' + '\n' + 'Low Resolution', r'b) Padoan 
              r'a) Threshold-based model' + '\n' + 'High Resolution', r'b) Padoan et al. (2012)'  + '\n' + 'High Resolution', r'c) Semenov et al. (2016)'  + '\n' + 'High Resolution', r'd) Evans et al. (2022)' + '\n' + 'High Resolution', '', '', '', '',]
 
 fig = plt.figure(figsize = (8, 12))
-gs0 = gd.GridSpec(6, 4, figure=fig, height_ratios = [1, 0.258, 1, 0.258, 1, 0.258, 1, 0.258, 1, 0.258], width_ratios = [1, 1, 1, 1, 1, 1.072])
+gs0 = gd.GridSpec(6, 4, figure=fig, height_ratios = [1, 0.258, 1, 0.258, 1, 0.258], width_ratios = [1, 1, 1, 1.072])
 gs0.update(hspace=0.00, wspace=0.00)
 
 for n in range(24):
     # face-on
-    if (n<4 or (n>8 and n<12) or (n>15 and n<20)):
+    if (n<4 or (n>7 and n<12) or (n>15 and n<20)):
         ax = fig.add_subplot(gs0[n])
         hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
         im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', vmin = -1.9, vmax = 5)
-    
-    # side-on
+        ax.set_xlim(-19.99, 19.99)
+        ax.set_ylim(-19.99, 19.99)
+        ax.set_title(titlelist[n], fontsize = 11)        
+        if (n == 3 or n == 7 or n == 11 or n == 15 or n == 19 or n == 23):
+            divider = make_axes_locatable(ax)
+            cax = divider.append_axes('right', size = '5%', pad = 0.05)
+            fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'log(n) [particles $cm^{-3}$]', size=14)
+        if (n == 0 or n == 8 or n == 16):
+            ax.set_ylabel('y [kpc]', fontsize = 14)
+
+        else:
+            ax.set_yticklabels([])
+            ax.set_xticklabels([])
+
+# side-on
         ax = fig.add_subplot(gs0[n+4])
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
         hist, xbin, ybin = np.histogram2d(x[n+1], y[n+1],weights=key[n+1], bins=600, range = ((-50, 50), (-50,50)))
         im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmin = -2, vmax = 5)
-    
-    if n == 3:
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes('right', size = '5%', pad = 0.05)
-        fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'log(n) [particles $cm^{-3}$]', size=14)
+        ax.set_aspect(1./ax.get_data_ratio())
+        ax.set_xlim(-19.99, 19.99)
+        ax.set_ylim(-10.99, 10.99)
         
-    if (n == 0 or n == 8 or n == 16):    
-        ax.set_ylabel('y [kpc]', fontsize = 14)
-        ax.set_yticklabels([])
+        if (n == 3 or n == 7 or n == 11 or n == 15 or n == 19 or n == 23):
+            divider = make_axes_locatable(ax)
+            cax = divider.append_axes('right', size = '5%', pad = 0.05)
+            
+            if (n ==3 or n == 11 or n == 19):
+                fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'log(n) [particles $cm^{-3}$]', size=14)
         
-    if (n == 4 or n == 12 or n == 20):    
-        ax.set_ylabel('z [kpc]', fontsize = 14)
-        ax.set_yticklabels([])
+        if (n == 0 or n == 8 or n == 16):    
+            ax.set_ylabel('z [kpc]', fontsize = 14)
         
-    if (n>19):
-        ax.set_xlabel('x [kpc]', fontsize = 14)
-    
-    ax.set_title(titlelist[n], fontsize = 11)
-    ax.set_xlim(-19.99, 19.99)
-    ax.set_ylim(-19.99, 19.99)
-    ax.set_aspect(1./ax.get_data_ratio())
+        else:
+            ax.set_yticklabels([])
+
+        if (n > 15):
+            ax.set_xlabel('x [kpc]', fontsize = 14)
+        
+        else:
+            ax.set_xticklabels([])
 
 plt.savefig('Gas_iso_com_all_high.pdf', bbox_inches='tight')
 plt.clf()

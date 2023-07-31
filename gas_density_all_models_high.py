@@ -37,7 +37,7 @@ plt.rcParams['legend.edgecolor'] = 'darkgray'
 plt.rcParams['patch.linewidth'] = 1
 
 
-s = pynbody.load('../high_master_iso/high.01000')
+s = pynbody.load('../high_evans_iso/high.01000')
 s.physical_units()
 s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
 
@@ -49,7 +49,7 @@ s3 = pynbody.load('../high_semenov_iso/high.01000')
 s3.physical_units()
 s3.g['n'] = s3.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
 
-s4 = pynbody.load('../high_master_iso/high.01000')
+s4 = pynbody.load('../high_evans_iso/high.01000')
 s4.physical_units()
 s4.g['n'] = s4.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
 
