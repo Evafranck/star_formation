@@ -41,7 +41,7 @@ x = []
 y = []
 
 def load_sim_faceon(mod):
-    s = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
+    s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units()
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
@@ -50,7 +50,7 @@ def load_sim_faceon(mod):
     y.append(s.g['y'])
 
 def load_sim_sideon(mod):
-    s = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
+    s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.sideon(s)
     s.physical_units()
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
@@ -59,14 +59,14 @@ def load_sim_sideon(mod):
     y.append(s.g['y'])
 
 
-model = ['master', 'padoan', 'semenov', 'evans']
+model = ['master', 'semenov', 'evans', 'federrath']
 for m in model:
     load_sim_faceon(m)
 for m in model:    
     load_sim_sideon(m)
 
 # Titel immer zu bearbeiten
-titlelist = [r'a) Threshold-based model', r'b) Padoan et al. (2012)', r'c) Semenov et al. (2016)', r'd) Evans et al. (2022)', '', '', '', '',]
+titlelist = [r'a) Threshold-based model', r'b) Semenov et al. (2016)', r'c) Evans et al. (2022)', r'd) Federrath et al. (2014)', '', '', '', '',]
 
 fig = plt.figure(figsize = (12, 3.85))
 gs0 = gd.GridSpec(2, 4, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1.07])
@@ -115,7 +115,7 @@ for n in range(8):
             ax.set_yticklabels([])
 
 
-fig.suptitle('Gas density (low resolution)')
-plt.savefig('density_all_low.pdf', bbox_inches='tight')
+fig.suptitle('Gas density (high resolution)')
+plt.savefig('density_all_high.pdf', bbox_inches='tight')
 plt.clf()
 

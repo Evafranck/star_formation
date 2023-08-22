@@ -41,35 +41,35 @@ x = []
 y = []
 
 def load_sim_faceon(mod):
-    s = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
+    s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units()
-    s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-    key.append(s.g['n'])
+    key.append(s.g['effform'])
+    print((s.g['effform']).max())
+    print(np.median(s.g['effform']))
     x.append(s.g['x'])
     y.append(s.g['y'])
 
 def load_sim_sideon(mod):
-    s = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
+    s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.sideon(s)
     s.physical_units()
-    s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
-    key.append(s.g['n'])
+    key.append(s.g['effform'])
     x.append(s.g['x'])
     y.append(s.g['y'])
 
 
-model = ['master', 'padoan', 'semenov', 'evans']
+model = ['evans', 'padoan', 'semenov', 'federrath']
 for m in model:
     load_sim_faceon(m)
 for m in model:    
     load_sim_sideon(m)
 
 # Titel immer zu bearbeiten
-titlelist = [r'a) Threshold-based model', r'b) Padoan et al. (2012)', r'c) Semenov et al. (2016)', r'd) Evans et al. (2022)', '', '', '', '',]
+titlelist = [r'a) Evans et al. (2022)', r'b) Padoan et al. (2012)', r'c) Semenov et al. (2016)', r'd) Federrath et al. (2014)', '', '', '', '',]
 
 fig = plt.figure(figsize = (12, 3.85))
-gs0 = gd.GridSpec(2, 4, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1.07])
+gs0 = gd.GridSpec(2, 4, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1.066])
 gs0.update(hspace=0.00, wspace=0.00)
 
 for n in range(8):
@@ -77,7 +77,7 @@ for n in range(8):
     if (n<4):
         ax = fig.add_subplot(gs0[n])
         hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', vmin = -1.9, vmax = 5)
+        im = ax.imshow(hist, extent=(-50,50,-50,50), cmap='CMRmap_r', vmax = 3)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
@@ -85,7 +85,7 @@ for n in range(8):
         if (n == 3):
             divider = make_axes_locatable(ax)
             cax = divider.append_axes('right', size = '5%', pad = 0.05)
-            fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'log(n) [particles $\mathrm{cm}^{-3}$]', size=12)
+            fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'effiency $\epsilon$', size=12)
         if (n == 0):
             ax.set_ylabel('y [kpc]', fontsize = 12)
 
@@ -98,7 +98,7 @@ for n in range(8):
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
         hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmin = -2, vmax = 5)
+        im = ax.imshow(hist, extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmax = 3)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)
@@ -114,8 +114,7 @@ for n in range(8):
         else:
             ax.set_yticklabels([])
 
-
-fig.suptitle('Gas density (low resolution)')
-plt.savefig('density_all_low.pdf', bbox_inches='tight')
+fig.suptitle('SFE in SF regions (high resolution)')
+plt.savefig('effform_all_high.pdf', bbox_inches='tight')
 plt.clf()
 
