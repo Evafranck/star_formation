@@ -22,10 +22,13 @@ eff_federrath = []
 
 eff_list = [eff_evans, eff_padoan, eff_semenov, eff_federrath]
 alpha_list = [alpha_evans, alpha_padoan, alpha_semenov, alpha_federrath]
-
 keylist = [alpha_list, eff_list]
-
-model = ['evans', 'padoan', 'semenov', 'fedderath']
+x_list = [(-0.1, 1.1), (-0.1, 1.1)]
+label_list = ['Evans et al. (2022)', 'Padoan et al. (2012)', 'Semenov et al. (2016)', 'Federrath et al. (2014)']
+title_list = ['Virial Parameter in SF regions (high resolution)', 'SFE in SF regions (high resolution)']
+colorlist = ['blue', 'red', 'green', 'purple']
+xlabel_list = [r'$\alpha_{\rm{sf}}$', r'$\epsilon_{\rm{sf}}$']
+model = ['evans', 'padoan', 'semenov', 'federrath']
 
 for i in range(4):
     s = pynbody.load('../high'+'_'+model[i]+'_iso/' + 'high.01000')
@@ -42,7 +45,14 @@ gs0 = gd.GridSpec(1, 2, figure=fig, wspace = 0.4)
 for n in range(2):
     ax = fig.add_subplot(gs0[n])
     for i in range(4):
-        hist, bins, edges = ax.hist(keylist[n][i], bins = 100, histtype = 'step', density = True)
+        hist, bins, edges = ax.hist(keylist[n][i], bins = 100, color = colorlist[i], range = x_list[n], label = label_list[i], histtype = 'step', density = True)
+    ax.set_aspect(1./ax.get_data_ratio())
+    ax.grid(linewidth = 0.3, color = 'grey')
+    ax.set_xlim(x_list[n])
+    ax.set_title(title_list[n])
+    ax.set_xlabel(xlabel_list[n])
+plt.legend()
+
 '''        if (n==0):
             mean = np.mean(eff_list[i])
             sigma = np.sqrt(np.var(eff_list[i]))
@@ -55,7 +65,5 @@ for n in range(2):
     ax.set_xlabel(unit[n])
     ax.set_xlim(range_list[n])
     ax.set_ylim(y_list[n])'''
-    ax.set_aspect(1./ax.get_data_ratio())
-    ax.grid(linewidth = 0.3, color = 'grey')
 
-fig.savefig('../Documents/Bachelorthesis/alpha_eff_comparison_cold.png')
+fig.savefig('alpha_eff_form_high.pdf')
