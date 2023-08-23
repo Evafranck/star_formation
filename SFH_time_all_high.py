@@ -109,14 +109,6 @@ def sfh(sim, filename=None, massform=True, clear=False, legend=False,
 
 	return array.SimArray(sfhist, "Msol yr**-1"), array.SimArray(thebins, "Gyr")
 
-s_low_mas = pynbody.load('low_master_iso/low.01000')
-s_med_mas = pynbody.load('low_padoan_iso/low.01000')
-s_low_sem = pynbody.load('low_semenov_iso/low.01000')
-s_med_sem = pynbody.load('low_evans_iso/low.01000')
-s_low_mas2 = pynbody.load('med_master_iso/med.01000')
-s_med_mas2 = pynbody.load('med_padoan_iso/med.01000')
-s_low_sem2 = pynbody.load('med_semenov_iso/med.01000')
-s_med_sem2 = pynbody.load('med_evans_iso/med.01000')
 
 model = ['master', 'padoan', 'semenov', 'evans', 'federrath']
 labellist = ['Threshold-based model', 'Padoan et al. (2012)', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
