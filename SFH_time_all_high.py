@@ -114,16 +114,17 @@ model = ['master', 'padoan', 'semenov', 'evans', 'federrath']
 labellist = ['Threshold-based model', 'Padoan et al. (2012)', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
 colorlist = ['blue','orange', 'green', 'red', 'purple']
 
-plt.figure(figsize = (17,5))
+plt.figure(figsize = (10,10))
 plt.title('Star formation history', fontsize = 16)
 plt.xlabel('Time [Gyr]', fontsize = 14)
-plt.ylabel('SFR [M$_\odot$ yr$^{-1}$]', fontsize = 14)
+plt.ylabel('log(SFR) [M$_\odot$ yr$^{-1}$]', fontsize = 14)
 plt.xlim(0, 1.5)
-plt.ylim(0, 0.5)
+plt.ylim(0, 15)
 for n in range(5):
     s = pynbody.load('../high' + '_'+ model[n] + '_iso/' + 'high.01000')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units()
     sfh(s, label = labellist[n], lw = 1, color = colorlist[n])
-plt.savefig('SFH_surf_den_iso_all_med_res.pdf', bbox_inches = 'tight')
+plt.legend()
+plt.savefig('SFH_time_all_high.pdf', bbox_inches = 'tight')
 

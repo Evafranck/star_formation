@@ -39,6 +39,12 @@ plt.rcParams['patch.linewidth'] = 0.5
 key = []
 x = []
 y = []
+mass = []
+
+def massweight(array_x, array_y, array_key, array_mass, b, range_tuple):
+    hist, xbin, ybin = np.histogram2d(array_x,array_y,weights=array_key*array_mass, bins=b, range = range_tuple)
+    mass, xbin, ybin = np.histogram2d(array_x,array_y,weights=array_mass, bins=b, range=range_tuple)
+    return hist/mass
 
 def load_sim_faceon(mod):
     s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
@@ -49,6 +55,7 @@ def load_sim_faceon(mod):
     print(np.median(s.g['alphaform']))
     x.append(s.g['x'])
     y.append(s.g['y'])
+    mass.append(s.g['mass'])
 
 def load_sim_sideon(mod):
     s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
@@ -57,6 +64,7 @@ def load_sim_sideon(mod):
     key.append(s.g['alphaform'])
     x.append(s.g['x'])
     y.append(s.g['y'])
+    mass.append(s.g['mass'])
 
 
 model = ['evans', 'padoan', 'semenov', 'federrath']
@@ -76,8 +84,8 @@ for n in range(8):
     # face-on
     if (n<4):
         ax = fig.add_subplot(gs0[n])
-        hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(hist, extent=(-50,50,-50,50), cmap='CMRmap_r', vmax = 4)
+        #hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
+        im = ax.imshow(massweight(x[n], y[n], key[n], mass[n], 600, ((-20,20),(-20,20))), extent=(-50,50,-50,50), cmap='CMRmap_r', vmax = 4)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
@@ -97,8 +105,7 @@ for n in range(8):
         ax = fig.add_subplot(gs0[n])
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
-        hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(hist, extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmax = 4)
+        im = ax.imshow(massweight(x[n], y[n], key[n], mass[n], 600, ((-20,20),(-10,10))), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmax = 4)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)
