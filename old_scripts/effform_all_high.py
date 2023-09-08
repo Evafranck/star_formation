@@ -44,7 +44,7 @@ def load_sim_faceon(mod):
     s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units()
-    key.append(s.g['effform'])
+    key.append(s.s['effform'])
     print((s.g['effform']).max())
     print(np.median(s.g['effform']))
     x.append(s.g['x'])
@@ -54,7 +54,7 @@ def load_sim_sideon(mod):
     s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.sideon(s)
     s.physical_units()
-    key.append(s.g['effform'])
+    key.append(s.s['effform'])
     x.append(s.g['x'])
     y.append(s.g['y'])
 

@@ -75,7 +75,7 @@ for n in range(8):
     if (n<4):
         ax = fig.add_subplot(gs0[n])
         hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(hist, extent=(-50,50,-50,50), cmap='CMRmap_r')# vmin = 0, vmax = 8)
+        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r')# vmin = 0, vmax = 8)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
@@ -96,7 +96,7 @@ for n in range(8):
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
         hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(hist, extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base)#, vmin = 0, vmax = 8)
+        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base)#, vmin = 0, vmax = 8)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)

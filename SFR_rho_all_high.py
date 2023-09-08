@@ -23,7 +23,7 @@ for n in range(5):
     s = pynbody.load('../high' + '_'+ model[n] + '_iso/' + 'high.01000')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units()
-    plt.scatter(np.log10(s.g['rho'].in_units('Msol pc**-2')*1.4), np.log10(s.g['sfr'].in_units('Msol kpc**-2 yr**-1')), s = 0.5, color = colorlist[n], label = labellist[n])
+    plt.scatter(np.log10(s.g['rho'].in_units('Msol pc**-3')*1.4), np.log10(s.g['sfr'].in_units('Msol kpc**-2 yr**-1')), s = 0.5, color = colorlist[n], label = labellist[n])
     #sfh(s, label = labellist[n], lw = 1, color = colorlist[n])
 plt.legend()
 plt.savefig('SFH_rho_all_high.pdf', bbox_inches = 'tight')

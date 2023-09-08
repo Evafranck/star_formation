@@ -37,24 +37,35 @@ plt.rcParams['legend.edgecolor'] = 'darkgray'
 plt.rcParams['patch.linewidth'] = 0.5
 
 key = []
+tempform = []
 x = []
 y = []
+x_s = []
+y_s = []
 
 def load_sim_faceon(mod):
     s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units()
     key.append(s.g['temp'])
+    tempform.append(s.s['tform'])
+    print(s.s['tform'].max())
+    print(s.s['tform'].min())
     x.append(s.g['x'])
     y.append(s.g['y'])
+    x_s.append(s.s['x'])
+    y_s.append(s.s['y'])
 
 def load_sim_sideon(mod):
     s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.sideon(s)
     s.physical_units()
     key.append(s.g['temp'])
+    tempform.append(s.s['tform'])
     x.append(s.g['x'])
     y.append(s.g['y'])
+    x_s.append(s.s['x'])
+    y_s.append(s.s['y'])
 
 
 model = ['master', 'semenov', 'evans', 'federrath']
@@ -75,9 +86,12 @@ for n in range(8):
     if (n<4):
         ax = fig.add_subplot(gs0[n])
         hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', vmin = 0, vmax = 8)
+        histform, xbins, ybins = np.histogram2d(x_s[n], y_s[n], weights=tempform[n], bins=400, range = ((-50, 50), (50,50)))
+        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='seismic', vmin = 4, vmax = 10)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
+        ax.contour(np.flipud(histform),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]],
+                                linewidths=0.5, cmap = plt.cm.viridis, levels = [1e-3, 1e0])
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
         ax.set_xticklabels([])
         if (n == 3):
@@ -96,10 +110,13 @@ for n in range(8):
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
         hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmin = 0, vmax = 8)
+        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='seismic', transform = rot+base, vmin = 4, vmax = 10)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)
+        histform, xbins, ybins = np.histogram2d(x_s[n], y_s[n], weights=tempform[n], bins=400, range = ((-50, 50), (50,50)))
+        ax.contour(np.flipud(histform),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]],
+                                                linewidths=0.5, cmap = plt.cm.viridis, levels = [1e-3, 1e0])
         ax.set_xlabel('x [kpc]', fontsize = 12)        
         if (n == 7):
             divider = make_axes_locatable(ax)
