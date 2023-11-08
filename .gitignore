@@ -4,8 +4,8 @@ __pycache__/
 *$py.class
 
 # plots
-*.pdf
-/plots
+#*.pdf
+# /plots
 
 # C extensions
 *.so

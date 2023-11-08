@@ -30,7 +30,7 @@ for n in range(4):
     temp.append(s.g['temp'])
     mass.append(s.g['mass'])
     
-    if (n==1):
+    if (n==0):
         s.s['n_sf'] = s.s['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
         dens_sf.append(s.s['n_sf'])
         temp_sf.append(s.s['tempform'])
