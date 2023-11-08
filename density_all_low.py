@@ -22,13 +22,7 @@ plt.rcParams['ytick.major.size'] = 1
 plt.rcParams['ytick.major.width'] = 1
 plt.rcParams['ytick.minor.size'] = 0.5
 plt.rcParams['ytick.minor.width'] = 0.5
-plt.rcParams['axes.edgecolor'] = 'k'#'gray'
-#plt.rcParams['axes.grid'] = True
-#plt.rcParams['grid.color'] = 'lightgray'
-#plt.rcParams['grid.linestyle'] = 'dashed' #dashes=(5, 1)
-#plt.rcParams['lines.dashed_pattern'] = 10, 3
-#plt.rcParams['grid.linewidth'] = 0.5
-#plt.rcParams['axes.facecolor'] = 'whitesmoke'
+plt.rcParams['axes.edgecolor'] = 'k'
 plt.rcParams['axes.axisbelow'] = True
 plt.rcParams['legend.fancybox'] = True
 plt.rcParams['legend.frameon'] = True
@@ -41,18 +35,22 @@ x = []
 y = []
 
 def load_sim_faceon(mod):
-    s = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
-    pynbody.analysis.angmom.faceon(s)
-    s.physical_units()
+    s_all = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
+    pynbody.analysis.angmom.faceon(s_all)
+    s_all.physical_units()
+    disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-10 kpc', '10 kpc')
+    s = s_all[disk]
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
     key.append(s.g['n'])
     x.append(s.g['x'])
     y.append(s.g['y'])
 
 def load_sim_sideon(mod):
-    s = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
-    pynbody.analysis.angmom.sideon(s)
-    s.physical_units()
+    s_all = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
+    pynbody.analysis.angmom.sideon(s_all)
+    s_all.physical_units()
+    disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-10 kpc', '10 kpc')
+    s = s_all[disk]
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
     key.append(s.g['n'])
     x.append(s.g['x'])

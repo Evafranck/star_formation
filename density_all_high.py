@@ -22,13 +22,7 @@ plt.rcParams['ytick.major.size'] = 1
 plt.rcParams['ytick.major.width'] = 1
 plt.rcParams['ytick.minor.size'] = 0.5
 plt.rcParams['ytick.minor.width'] = 0.5
-plt.rcParams['axes.edgecolor'] = 'k'#'gray'
-#plt.rcParams['axes.grid'] = True
-#plt.rcParams['grid.color'] = 'lightgray'
-#plt.rcParams['grid.linestyle'] = 'dashed' #dashes=(5, 1)
-#plt.rcParams['lines.dashed_pattern'] = 10, 3
-#plt.rcParams['grid.linewidth'] = 0.5
-#plt.rcParams['axes.facecolor'] = 'whitesmoke'
+plt.rcParams['axes.edgecolor'] = 'k'
 plt.rcParams['axes.axisbelow'] = True
 plt.rcParams['legend.fancybox'] = True
 plt.rcParams['legend.frameon'] = True
@@ -41,18 +35,23 @@ x = []
 y = []
 
 def load_sim_faceon(mod):
-    s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
-    pynbody.analysis.angmom.faceon(s)
-    s.physical_units()
+    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
+    pynbody.analysis.angmom.faceon(s_all)
+    s_all.physical_units()
+    disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
+    s = s_all[disk]
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
+    
     key.append(s.g['n'])
     x.append(s.g['x'])
     y.append(s.g['y'])
 
 def load_sim_sideon(mod):
-    s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
-    pynbody.analysis.angmom.sideon(s)
-    s.physical_units()
+    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
+    pynbody.analysis.angmom.sideon(s_all)
+    s_all.physical_units()
+    disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
+    s = s_all[disk]
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
     key.append(s.g['n'])
     x.append(s.g['x'])
@@ -76,8 +75,8 @@ for n in range(8):
     # face-on
     if (n<4):
         ax = fig.add_subplot(gs0[n])
-        hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', vmin = -1.9, vmax = 5)
+        hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=400, range = ((-30, 30), (-30,30)))
+        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='CMRmap_r', vmin = -1.9, vmax = 5)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
@@ -97,8 +96,8 @@ for n in range(8):
         ax = fig.add_subplot(gs0[n])
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
-        hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base, vmin = -2, vmax = 5)
+        hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=400, range = ((-30, 30), (-30,30)))
+        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base, vmin = -2, vmax = 5)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)

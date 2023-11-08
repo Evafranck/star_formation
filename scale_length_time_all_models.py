@@ -63,13 +63,12 @@ def surface_density(r, amplitude1, r_eff, n, amplitude2, r_d):
     return (np.log10(amplitude1 * np.exp(-gammaincinv(2 * n, 0.5) * ((r / r_eff) ** (1 / n) - 1)) + amplitude2 * np.exp(- r / r_d)))
 
 #####################################################################################################
-titlelist = ['Scale length over time'+'\n'+ '(High Resolution)']
 pathlist = ['../high_master_iso', '../high_semenov_iso', '../high_evans_iso', '../high_federrath_iso']
 simulation = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
 ######################################################################################################
 
-fig = plt.figure(figsize=(10,5))
-gs0 = gridspec.GridSpec(1, 2)
+fig = plt.figure(figsize=(10,10))
+gs0 = gridspec.GridSpec(1, 1)
 gs0.update(hspace=0.00, wspace=0.00)
 
 
@@ -77,19 +76,19 @@ label = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)'
 label2 = ['bulge threshold-based model', 'bulge Semenov et al. (2016)', 'bulge Evans et al. (2022)', 'Federrath et al. (2014)']
 color = ['blue', 'orange', 'green', 'red']
 color2 = ['blue', 'orange', 'green', 'red']
-loc = [0.4, 0.6]
-loc2 = [2.2, 2.6]
-for n in range(2):
+loc = [0.8, 0.6]
+loc2 = [3.8, 3.6]
+for n in range(1):
     ax = fig.add_subplot(gs0[n])
-    ax.text(0.7,loc2[n],r'Scale length of the disk $R_d$',fontsize=12,color='black',horizontalalignment='center',verticalalignment='center')
-    ax.text(1,loc[n],r'Scale length of the bulge $R_{\rm eff}$',fontsize=12,color='black',horizontalalignment='center',verticalalignment='center')
-    ax.set_title(titlelist[n], fontsize = 16)
+    ax.text(1,3.8,r'Scale length of the disk $R_d$',fontsize=12,color='black',horizontalalignment='center',verticalalignment='center')
+    ax.text(1,0.8,r'Scale length of the bulge $R_{\rm eff}$',fontsize=12,color='black',horizontalalignment='center',verticalalignment='center')
+    ax.set_title('Scale length over time', fontsize = 16)
     ax.set_xlabel('time [Gyr]', fontsize = 14)
     if n==1:
         ax.set_yticklabels([])
     if n==0:
         ax.set_ylabel('Scale length [kpc]', fontsize = 14)
-    for k, sim in enumerate(pathlist[n]):
+    for k, sim in enumerate(pathlist):
         
         amp1 = np.array([])
         amp2 = np.array([])
@@ -99,10 +98,9 @@ for n in range(2):
         time = []
  
         simname = glob.glob(sim+'/'+'*.0????')
-        print(simname[0])
         #if not os.path.isfile(sim+'_surf_den_test.dat'):
         for name in simname:
-            s = pb.load(sim + '/' + name)
+            s = pb.load(name)
             s.physical_units()
             new = filt.LowPass('age', s.properties['time'].in_units('Gyr'))
             h1 = s.s[new]
@@ -157,13 +155,12 @@ for n in range(2):
         ax.plot(time3,R_d3,color=color2[k],lw=1)
                 #ax.scatter(time3,R_eff3,color=color[k],s=2, linestyle = '-', label = label[k])
                     #ax.scatter(time3,R_d3,color=color2[k],s=2, label = label2[k])
-        ax.set_ylim(-0.1,4.45)
+        ax.set_ylim(-0.5,5.5)
         ax.set_xlim(0.1,1.6)
         #ax.set_yticks([0, 1, 2, 3])
         #ax.set_xticks(size = 20)
         #ax.set_yticks(size = 20)
-for n in range(2):
-    if n==0: ax.legend(fontsize=12, loc='center',bbox_to_anchor=(-0.5, 0.8))
+        ax.legend(fontsize=16, loc='center', bbox_to_anchor=(0.6, 0.5))
             #axes[k].scatter(time,R_d,color='black',s=2, label = r'scale length of the disk $R_d$')
                     #axes[k].plot([r_90[k],r_90[k]],[0,4],ls='dashed',color='gray',lw=2)
 

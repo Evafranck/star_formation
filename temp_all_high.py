@@ -44,24 +44,28 @@ x_s = []
 y_s = []
 
 def load_sim_faceon(mod):
-    s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
-    pynbody.analysis.angmom.faceon(s)
-    s.physical_units()
+    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
+    pynbody.analysis.angmom.faceon(s_all)
+    s_all.physical_units()
+    disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
+    s = s_all[disk]
     key.append(s.g['temp'])
-    tempform.append(s.s['tform'])
-    print(s.s['tform'].max())
-    print(s.s['tform'].min())
+    #tempform.append(s.s['tempform'])
+    print(s.g['temp'].max())
+    print(s.g['temp'].min())
     x.append(s.g['x'])
     y.append(s.g['y'])
     x_s.append(s.s['x'])
     y_s.append(s.s['y'])
 
 def load_sim_sideon(mod):
-    s = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
-    pynbody.analysis.angmom.sideon(s)
-    s.physical_units()
+    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
+    pynbody.analysis.angmom.sideon(s_all)
+    s_all.physical_units()
+    disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
+    s = s_all[disk]
     key.append(s.g['temp'])
-    tempform.append(s.s['tform'])
+    #tempform.append(s.s['tempform'])
     x.append(s.g['x'])
     y.append(s.g['y'])
     x_s.append(s.s['x'])
@@ -85,13 +89,11 @@ for n in range(8):
     # face-on
     if (n<4):
         ax = fig.add_subplot(gs0[n])
-        hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        histform, xbins, ybins = np.histogram2d(x_s[n], y_s[n], weights=tempform[n], bins=400, range = ((-50, 50), (50,50)))
-        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='seismic', vmin = 4, vmax = 10)
+        hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=300, range = ((-30, 30), (-30,30)))
+        #histform, xbins, ybins = np.histogram2d(x_s[n], y_s[n], weights=tempform[n], bins=400, range = ((-30, 30), (-30,30)))
+        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='seismic', vmin = 4, vmax = 9)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
-        ax.contour(np.flipud(histform),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]],
-                                linewidths=0.5, cmap = plt.cm.viridis, levels = [1e-3, 1e0])
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
         ax.set_xticklabels([])
         if (n == 3):
@@ -109,14 +111,11 @@ for n in range(8):
         ax = fig.add_subplot(gs0[n])
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
-        hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=600, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(np.log10(hist), extent=(-50,50,-50,50), cmap='seismic', transform = rot+base, vmin = 4, vmax = 10)
+        hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=300, range = ((-30, 30), (-30,30)))
+        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='seismic', transform = rot+base, vmin = 4, vmax = 9)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)
-        histform, xbins, ybins = np.histogram2d(x_s[n], y_s[n], weights=tempform[n], bins=400, range = ((-50, 50), (50,50)))
-        ax.contour(np.flipud(histform),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]],
-                                                linewidths=0.5, cmap = plt.cm.viridis, levels = [1e-3, 1e0])
         ax.set_xlabel('x [kpc]', fontsize = 12)        
         if (n == 7):
             divider = make_axes_locatable(ax)

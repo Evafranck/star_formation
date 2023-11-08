@@ -4,29 +4,50 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib import transforms
 import numpy as np
-from pynbody.analysis import profile
+#from pynbody.analysis import profile
 import matplotlib.gridspec as gd
 from pynbody import units as units
 from pynbody import array
 import pynbody.filt as f
 
-
 density = []
 temp = []
 mass = []
-massform = []
+dens_sf = []
+temp_sf = []
+mass_sf = []
 model = ['master', 'semenov', 'evans', 'federrath']
 titlelist = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
 
 for n in range(4):
-    s = pynbody.load('../high'+'_'+model[n]+'_iso/' + 'high.01000')
-    pynbody.analysis.angmom.faceon(s)
-    s.physical_units()
+    s_all = pynbody.load('../high'+'_'+model[n]+'_iso/' + 'high.01000')
+    pynbody.analysis.angmom.faceon(s_all)
+    s_all.physical_units()
+    disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
+    s = s_all[disk]
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
     density.append(s.g['n'])
     temp.append(s.g['temp'])
     mass.append(s.g['mass'])
-    massform.append(s.g['massform'])
+    
+    if (n==1):
+        s.s['n_sf'] = s.s['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
+        dens_sf.append(s.s['n_sf'])
+        temp_sf.append(s.s['tempform'])
+        mass_sf.append(s.s['massform'])
+        
+        print('mass_max = ',np.max(mass))
+        print('mass_min = ', np.min(mass))
+        print('temp_max = ', np.max(temp))
+        print('temp_min = ', np.min(temp))
+        print('dens_max = ', np.max(density))
+        print('dens_min = ', np.min(density))
+        print('mass_sf_max = ', np.max(mass_sf))
+        print('mass_sf_min = ', np.min(mass_sf))
+        print('temp_sf_max = ', np.max(temp_sf))
+        print('temp_sf_min = ', np.min(temp_sf))
+        print('dens_sf_max = ', np.max(dens_sf))
+        print('dens_sf_min = ', np.min(dens_sf))
 
 fig = plt.figure(figsize = (9.92,10))
 gs0 = gd.GridSpec(2, 2, figure=fig, width_ratios=[1,1], height_ratios=[1,1])
@@ -34,16 +55,19 @@ gs0.update(hspace=0.00, wspace=0.00)
 
 for n in range(4):
     ax = fig.add_subplot(gs0[n])
-    hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=400, range = ((-18, 5), (1,9)))
-    histform, xbins, ybins = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=massform[n], bins=400, range = ((-18, 5), (1,9)))
-    im = ax.imshow(hist, cmap = 'magma_r', extent=(-18, 5, 1,9), norm = matplotlib.colors.LogNorm())
-    #im = ax.imshow(histform, cmap = 'magma_r', extent=(-18, 5, 1,9), norm = matplotlib.colors.LogNorm())
-    ax.contour(np.flipud(histform),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]],
-                linewidths=0.5, cmap = plt.cm.viridis, levels = [1e5, 1e6])
-    ax.set_xlim(-18, 5)
+    hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=400, range = ((-6, 5), (1.5,7.9)))
+    im = ax.imshow(np.rot90(hist), cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm())
+
+    if (n==0):
+        histform, xbins, ybins = np.histogram2d(np.log10(dens_sf[n]), np.log10(temp_sf[n]), weights=mass_sf[n], bins=400, range = ((-6, 5), (1.5,7.9)))
+        #im = ax.imshow(np.rot90(histform), cmap = 'magma_r', extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], norm = matplotlib.colors.LogNorm())
+        ax.contour(np.flipud(np.rot90(histform)),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], linewidths=0.5, cmap = plt.cm.plasma, levels = [1e2, 1e4, 1e5])
+
+    ax.set_xlim(-6, 5)
     ax.set_ylim(1.5,7.9)
-    ax.vlines(-3, 1.5, 7.9, ls = 'dashed', color = 'grey', linewidths = 0.5) # 0.01% of density threshold (10 particles/cm^3)
-    ax.hlines(4, -18, 5, ls = 'dashed', color = 'grey', lw = 0.5) # separates hot and cold gas 
+    ax.vlines(-1.8, 1.5, 7.9, ls = '-', color = 'grey', linewidths = 0.5, label = r'0.01% of $n_{\rm th}$') # 0.01% of density threshold (10 particles/cm^3)
+    ax.vlines(1, 1.5, 7.9, ls = '--', color = 'grey', linewidths = 1, label = r'$n_{\rm th}$') # density threshold (10 particles/cm^3)
+    ax.hlines(3.5, -6, 5, ls = ':', color = 'grey', lw = 0.5, label = r'T = $3.5 \cdot 10^4$ K') # separates hot and cold gas 
     ax.text(0.5, 0.9, titlelist[n], fontsize = 16, transform = ax.transAxes, horizontalalignment = 'center')
     if (n == 0 or n == 1):
         ax.set_xticklabels([])
@@ -52,14 +76,12 @@ for n in range(4):
     if (n == 1 or n == 3):
         ax.set_yticklabels([])
         ax.tick_params(left=False)
-        #divider = make_axes_locatable(ax)
-        #cax = divider.append_axes('right', size = '5%', pad = 0.05)
-        #fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Mass [M$_{\odot}$]', size=12)
     else:
         ax.set_ylabel('log(T [K])', fontsize = 12)
     ax.set_aspect(1./ax.get_data_ratio())
     if (n == 2):
         cax = plt.axes([0.07, 0.1, 0.02, 0.15])
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Mass [M$_{\odot}$]', size=12)
+        ax.legend(loc = 'lower right')
 fig.tight_layout()
-plt.savefig('density_temp_all_high.pdf')
+plt.savefig('density_temp_rotated.pdf')

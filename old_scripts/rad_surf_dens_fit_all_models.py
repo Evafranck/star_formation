@@ -63,9 +63,8 @@ def surface_density(r, amplitude1, r_eff, n, amplitude2, r_d):
 
 #####################################################################################################
 
-path = ['low_master_iso', 'low_padoan_iso', 'low_semenov_iso', 'low_evans_iso']
-path2 = ['med_master_iso', 'med_padoan_iso', 'med_semenov_iso', 'med_evans_iso']
-simulation = ['Threshold-based model'+'\n'+'Low Resolution', 'Padoan et al. (2012)'+'\n'+'Low Resolution','Semenov et al. (2016)'+'\n'+'Low Resolution', 'Evans et al. (2022)'+'\n'+'Low Resolution', 'Threshold-based model'+'\n'+'Medium Resolution', 'Padoan et al. (2012)'+'\n'+'Medium Resolution','Semenov et al. (2016)'+'\n'+'Medium Resolution', 'Evans et al. (2022)'+'\n'+'Medium Resolution']
+pathlist = ['high_master_iso', 'high_semenov_iso', 'high_evans_iso', 'high_federrath_iso']
+simulation = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)', 'Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
 
 ######################################################################################################
 
@@ -91,8 +90,7 @@ for i, cell in enumerate(gs):
         axes[-1].set_yticklabels([])
 
 
-for k, sim in enumerate(path):
-    sim = '/mnt/storage/evafranck_data/simulations/agora/'+sim
+for k, sim in enumerate(pathlist):
     if not os.path.isfile(sim+'_surf_den_test.dat'):
         s = pb.load(sim + '/low.01000')
         s.physical_units()
