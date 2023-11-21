@@ -20,7 +20,7 @@ model = ['master', 'semenov', 'evans', 'federrath']
 titlelist = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
 
 for n in range(4):
-    s_all = pynbody.load('../high'+'_'+model[n]+'_iso/' + 'high.01000')
+    s_all = pynbody.load('../med'+'_'+model[n]+'_iso/' + 'med.01000')
     pynbody.analysis.angmom.faceon(s_all)
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
@@ -31,10 +31,12 @@ for n in range(4):
     mass.append(s.g['mass'])
     
     if (n==0):
-        s.s['n_sf'] = s.s['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
-        dens_sf.append(s.s['n_sf'])
-        temp_sf.append(s.s['tempform'])
-        mass_sf.append(s.s['massform'])
+        new = f.LowPass('age', '1 Gyr')
+        s2 = s.s[new]
+        s2.s['n_sf'] = s2.s['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
+        dens_sf.append(s2.s['n_sf'])
+        temp_sf.append(s2.s['tempform'])
+        mass_sf.append(s2.s['massform'])
         
         print('mass_max = ',np.max(mass))
         print('mass_min = ', np.min(mass))
@@ -56,13 +58,19 @@ gs0.update(hspace=0.00, wspace=0.00)
 for n in range(4):
     ax = fig.add_subplot(gs0[n])
     hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=400, range = ((-6, 5), (1.5,7.9)))
-    im = ax.imshow(np.rot90(hist), cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm())
+    im = ax.imshow(np.rot90(hist), cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(4.5), vmax = 10**(7.5)))
 
     if (n==0):
         histform, xbins, ybins = np.histogram2d(np.log10(dens_sf[n]), np.log10(temp_sf[n]), weights=mass_sf[n], bins=400, range = ((-6, 5), (1.5,7.9)))
         #im = ax.imshow(np.rot90(histform), cmap = 'magma_r', extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], norm = matplotlib.colors.LogNorm())
-        ax.contour(np.flipud(np.rot90(histform)),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], linewidths=0.5, cmap = plt.cm.plasma, levels = [1e2, 1e4, 1e5])
-
+        level = [1e4, 1e6]
+        colors = ['orchid', 'green']
+        strs = [r'$10^4 M_{\rm sun}$', r'$10^6 M_{\rm sun}$']
+        cont = ax.contour(np.flipud(np.rot90(histform)),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], linewidths=0.5, cmap = plt.cm.PiYG, levels = level)
+        list = []
+        for i, level in enumerate(level):
+            list.append(plt.Line2D([0], [0], ls = '-', lw = 1, color = colors[i]))
+        ax.legend(list, strs, loc = 'lower left')
     ax.set_xlim(-6, 5)
     ax.set_ylim(1.5,7.9)
     ax.vlines(-1.8, 1.5, 7.9, ls = '-', color = 'grey', linewidths = 0.5, label = r'0.01% of $n_{\rm th}$') # 0.01% of density threshold (10 particles/cm^3)
@@ -84,4 +92,4 @@ for n in range(4):
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Mass [M$_{\odot}$]', size=12)
         ax.legend(loc = 'lower right')
 fig.tight_layout()
-plt.savefig('density_temp_rotated.pdf')
+plt.savefig('dens_temp_med.pdf')

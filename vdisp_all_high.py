@@ -8,6 +8,7 @@ from matplotlib import transforms
 from pynbody import units
 import pynbody.filt as f
 import glob
+import scipy.stats
 
 plt.rc('axes', linewidth=0.5)
 plt.rcParams['xtick.direction'] = 'in'
@@ -40,7 +41,7 @@ def load_sim_faceon(mod):
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
     s = s_all[disk]
-    key.append(s.g['v_disp'])
+    key.append(np.sqrt(s.g['v2'])) #geschwindigkeit
     x.append(s.g['x'])
     y.append(s.g['y'])
 
@@ -50,7 +51,7 @@ def load_sim_sideon(mod):
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
     s = s_all[disk]
-    key.append(s.g['v_disp'])
+    key.append(np.sqrt(s.g['v2'])) # geschwindigkeit
     x.append(s.g['x'])
     y.append(s.g['y'])
 
@@ -72,8 +73,8 @@ for n in range(8):
     # face-on
     if (n<4):
         ax = fig.add_subplot(gs0[n])
-        hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=400, range = ((-30, 30), (-30,30)))
-        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='CMRmap_r')# vmin = 0, vmax = 8)
+        hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='std', bins=400, range = ((-30, 30), (-30,30)))
+        im = ax.imshow(hist, extent=(-30,30,-30,30), cmap='CMRmap_r', vmin = 0, vmax = 60)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
@@ -93,8 +94,9 @@ for n in range(8):
         ax = fig.add_subplot(gs0[n])
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
-        hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=400, range = ((-30, 30), (-30,30)))
-        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base)#, vmin = 0, vmax = 8)
+        # binned statistics nochmal anschauen
+        hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='std', bins=400, range = ((-30, 30), (-30,30)))
+        im = ax.imshow(hist, extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base, vmin = 0, vmax = 60)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)
@@ -114,4 +116,3 @@ for n in range(8):
 fig.suptitle('Gas velocity dispersion (high resolution)')
 plt.savefig('vdisp_all_high.pdf', bbox_inches='tight')
 plt.clf()
-

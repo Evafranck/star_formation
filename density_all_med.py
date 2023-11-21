@@ -38,7 +38,7 @@ surface_faceon = (60*60/400*units.kpc**2).in_units('cm**2') # 60 kpc * 60 kpc / 
 surface_sideon = (4*60/400*units.kpc**2).in_units('cm**2') # 10 kpc * 60 kpc / 400 bins
 
 def load_sim_faceon(mod):
-    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
+    s_all = pynbody.load('../med'+'_'+mod+'_iso/' + 'med.01000')
     pynbody.analysis.angmom.faceon(s_all)
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
@@ -51,11 +51,11 @@ def load_sim_faceon(mod):
     key.append(s.g['n'])
     x.append(s.g['x'])
     y.append(s.g['y'])
-    #print(mod, s.g['rho'].min(), s.g['rho'].max(), np.highian(s.g['rho']))
+    #print(mod, s.g['rho'].min(), s.g['rho'].max(), np.median(s.g['rho']))
     print(mod, s.g['n'].min(), s.g['n'].max(), np.median(s.g['n']))
 
 def load_sim_sideon(mod):
-    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
+    s_all = pynbody.load('../med'+'_'+mod+'_iso/' + 'med.01000')
     pynbody.analysis.angmom.sideon(s_all)
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
@@ -78,9 +78,7 @@ for m in model:
 # Titel immer zu bearbeiten
 titlelist = [r'a) Threshold-based model', r'b) Semenov et al. (2016)', r'c) Evans et al. (2022)', r'd) Federrath et al. (2014)', '', '', '', '',]
 
-fig = plt.figure(figsize = (12, 3.85))
-gs0 = gd.GridSpec(2, 4, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1.07])
-gs0.update(hspace=0.00, wspace=0.00)
+c
 
 for n in range(8):
     # face-on
@@ -88,7 +86,7 @@ for n in range(8):
         ax = fig.add_subplot(gs0[n])
         #hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=400, range = ((-30, 30), (-30,30)))
         hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='median', bins=400, range = ((-30, 30), (-30,30)))
-        #im = ax.imshow(np.log10((hist/surface_faceon)/(4*units.kpc).in_units('cm')), extent=(-30,30,-30,30), cmap='CMRmap_r')#, vmin = -2, vmax = 2)
+        #im = ax.imshow(np.log10((hist/surface_faceon)/(4*units.kpc).in_units('cm')), extent=(-30,30,-30,30), cmap='CMRmap_r')#, vmin = -2, vmax = 5)
         im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='CMRmap_r', vmin = -2, vmax = 2)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
@@ -111,7 +109,7 @@ for n in range(8):
         rot = transforms.Affine2D().rotate_deg(90)
         hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='median', bins=400, range = ((-30, 30), (-30,30)))
         #hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=400, range = ((-30, 30), (-30,30)))
-        #im = ax.imshow(np.log10((hist/surface_sideon)/(360*units.kpc).in_units('cm')), extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base)#, vmin = -2, vmax = 2)
+        #im = ax.imshow(np.log10((hist/surface_sideon)/(360*units.kpc).in_units('cm')), extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base)#, vmin = -2, vmax = 5)
         im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base, vmin = -2, vmax = 2)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
@@ -129,7 +127,7 @@ for n in range(8):
             ax.set_yticklabels([])
 
 
-fig.suptitle('Gas density (high resolution)')
-plt.savefig('density_all_high.pdf', bbox_inches='tight')
+fig.suptitle('Gas density (med resolution)')
+plt.savefig('density_all_med.pdf', bbox_inches='tight')
 plt.clf()
 

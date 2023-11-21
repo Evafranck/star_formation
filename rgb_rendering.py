@@ -40,9 +40,9 @@ for sim_path in simulations:
 for sim_path in simulations:    
     load_sim_sideon(sim_path)
 
-# Create a gridspec with 2 rows and 4 columns
-fig = plt.figure(figsize=(12, 6))
-grid = gd.GridSpec(2, 4, width_ratios=[1, 1, 1, 1])
+fig = plt.figure(figsize = (12, 4))
+gs0 = gd.GridSpec(2, 4, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1])
+gs0.update(hspace=0.00, wspace=0.00)
 
 for n in range(4):
     ax1 = plt.subplot(grid[0, n])
