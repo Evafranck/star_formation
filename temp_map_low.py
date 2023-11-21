@@ -42,9 +42,10 @@ x = []
 y = []
 x_s = []
 y_s = []
+bins = 350
 
 def load_sim_faceon(mod):
-    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
+    s_all = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
     pynbody.analysis.angmom.faceon(s_all)
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
@@ -59,7 +60,7 @@ def load_sim_faceon(mod):
     y_s.append(s.s['y'])
 
 def load_sim_sideon(mod):
-    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
+    s_all = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
     pynbody.analysis.angmom.sideon(s_all)
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
@@ -89,9 +90,9 @@ for n in range(8):
     # face-on
     if (n<4):
         ax = fig.add_subplot(gs0[n])
-        hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=300, range = ((-30, 30), (-30,30)))
+        hist, xbin, ybin = np.histogram2d(x[n], y[n], weights=key[n], bins=bins, range = ((-30, 30), (-30,30)))
         #histform, xbins, ybins = np.histogram2d(x_s[n], y_s[n], weights=tempform[n], bins=400, range = ((-30, 30), (-30,30)))
-        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='seismic', vmin = 4, vmax = 9)
+        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='seismic', vmin = 2.1, vmax = 8)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
@@ -111,8 +112,8 @@ for n in range(8):
         ax = fig.add_subplot(gs0[n])
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
-        hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=300, range = ((-30, 30), (-30,30)))
-        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='seismic', transform = rot+base, vmin = 4, vmax = 9)
+        hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=bins, range = ((-30, 30), (-30,30)))
+        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='seismic', transform = rot+base, vmin = 2, vmax = 7.9)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)
@@ -129,7 +130,7 @@ for n in range(8):
             ax.set_yticklabels([])
 
 
-fig.suptitle('Gas temperature (high resolution)')
-plt.savefig('temp_all_high.pdf', bbox_inches='tight')
+fig.suptitle('Gas temperature (low resolution)')
+plt.savefig('temp_map_low.pdf', bbox_inches='tight')
 plt.clf()
 

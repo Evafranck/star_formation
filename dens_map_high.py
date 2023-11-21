@@ -34,24 +34,37 @@ plt.rcParams['patch.linewidth'] = 0.5
 key = []
 x = []
 y = []
+bins = 500
+
 
 def load_sim_faceon(mod):
-    s_all = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
+    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.faceon(s_all)
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
-    s = s_all[disk]
-    key.append(np.sqrt(s.g['v2'])) #geschwindigkeit
+    s_disk = s_all[disk]
+    cold = f.LowPass('temp', '30000 K') # nur kaltes gas
+    s = s_disk.g[cold]
+    s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
+    
+    #key.append(s.g['mass'].in_units('kg')/(1.673*10**(-27)))
+    key.append(s.g['n'])
     x.append(s.g['x'])
     y.append(s.g['y'])
+    #print(mod, s.g['rho'].min(), s.g['rho'].max(), np.highian(s.g['rho']))
+    print(mod, 'dens_min = ', s.g['n'].min(), 'dens_max = ', s.g['n'].max(), 'dens_mean = ', np.mean(s.g['n']))
 
 def load_sim_sideon(mod):
-    s_all = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
+    s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
     pynbody.analysis.angmom.sideon(s_all)
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
-    s = s_all[disk]
-    key.append(np.sqrt(s.g['v2'])) # geschwindigkeit
+    s_disk = s_all[disk]
+    cold = f.LowPass('temp', '30000 K') # nur kaltes gas
+    s = s_disk.g[cold]
+    s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
+    #key.append(s.g['mass'].in_units('kg')/(1.673*10**(-27)))
+    key.append(s.g['n'])
     x.append(s.g['x'])
     y.append(s.g['y'])
 
@@ -63,7 +76,7 @@ for m in model:
     load_sim_sideon(m)
 
 # Titel immer zu bearbeiten
-titlelist = [r'a) Threshold-based model', r'b) Semenov et al. (2016)', r'c) Evans et al. (2022)', r'd) Federrath et al. (2014)', '', '', '', '']
+titlelist = [r'a) Threshold-based model', r'b) Semenov et al. (2016)', r'c) Evans et al. (2022)', r'd) Federrath et al. (2014)', '', '', '', '',]
 
 fig = plt.figure(figsize = (12, 3.85))
 gs0 = gd.GridSpec(2, 4, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1.07])
@@ -73,8 +86,10 @@ for n in range(8):
     # face-on
     if (n<4):
         ax = fig.add_subplot(gs0[n])
-        hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='std', bins=400, range = ((-30, 30), (-30,30)))
-        im = ax.imshow(hist, extent=(-30,30,-30,30), cmap='CMRmap_r', vmin = 0, vmax = 60)
+        #hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=400, range = ((-30, 30), (-30,30)))
+        hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='mean', bins=bins, range = ((-30, 30), (-30,30)))
+        #im = ax.imshow(np.log10((hist/surface_faceon)/(4*units.kpc).in_units('cm')), extent=(-30,30,-30,30), cmap='CMRmap_r')#, vmin = -2, vmax = 2)
+        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='CMRmap_r', vmin = -1.9, vmax = 2)
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-19.99, 19.99)
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
@@ -82,7 +97,7 @@ for n in range(8):
         if (n == 3):
             divider = make_axes_locatable(ax)
             cax = divider.append_axes('right', size = '5%', pad = 0.05)
-            fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'$\sigma$ [km/s]', size=12)
+            fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'log(n) [particles $\mathrm{cm}^{-3}$]', size=12)
         if (n == 0):
             ax.set_ylabel('y [kpc]', fontsize = 12)
 
@@ -94,9 +109,10 @@ for n in range(8):
         ax = fig.add_subplot(gs0[n])
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
-        # binned statistics nochmal anschauen
-        hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='std', bins=400, range = ((-30, 30), (-30,30)))
-        im = ax.imshow(hist, extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base, vmin = 0, vmax = 60)
+        hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='mean', bins=bins, range = ((-30, 30), (-30,30)))
+        #hist, xbin, ybin = np.histogram2d(x[n], y[n],weights=key[n], bins=400, range = ((-30, 30), (-30,30)))
+        #im = ax.imshow(np.log10((hist/surface_sideon)/(360*units.kpc).in_units('cm')), extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base)#, vmin = -2, vmax = 2)
+        im = ax.imshow(np.log10(hist), extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base, vmin = -2, vmax = 2)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)
@@ -113,6 +129,7 @@ for n in range(8):
             ax.set_yticklabels([])
 
 
-fig.suptitle('Gas velocity dispersion (low resolution)')
-plt.savefig('vdisp_all_low.pdf', bbox_inches='tight')
+fig.suptitle('Gas density (high resolution)')
+plt.savefig('dens_map_high.pdf', bbox_inches='tight')
 plt.clf()
+

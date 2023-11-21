@@ -120,5 +120,5 @@ plt.legend(loc = 'lower right', fontsize = 14)
 plt.title('Kennicutt-Schmidt-relation', fontsize = 16)
 plt.tight_layout()
 plt.show()
-plt.savefig('KS_law_one_plot.pdf', bbox_inches='tight')
+plt.savefig('KS_law_high.pdf', bbox_inches='tight')
 

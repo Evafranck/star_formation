@@ -9,7 +9,7 @@ from pynbody import array
 import pynbody.filt as f
 
 def sfh(sim, filename=None, massform=True, clear=False, legend=False,
-		subplot=False, trange=False, bins=100, **kwargs):
+		subplot=False, trange=False, bins=200, **kwargs):
 	'''
 	star formation history
 
@@ -128,5 +128,5 @@ for n in range(5):
     s.physical_units()
     sfh(s, label = labellist[n], lw = 1, color = colorlist[n])
 plt.legend(fontsize = 14)
-plt.savefig('SFH_time_all_high.pdf', bbox_inches = 'tight')
+plt.savefig('SFH_time_high.pdf', bbox_inches = 'tight')
 
