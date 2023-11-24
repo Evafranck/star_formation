@@ -21,7 +21,7 @@ KS_ybigiel = []
 # calculate SFR with t_ff and epsilon_ff = 0.1%, 1%, 10% 	
 x = np.logspace(-1.5, 1, 100)  # Generates 100 points from 10^0 to 10^2 Msol/pc^2
 G = 6.7*10**(-11)*units.m**3/(units.kg*units.s**2)
-t_ff = np.sqrt(3*np.pi/(32*G.in_units('pc**3 Msol**-1 yr**-2')*x)) # in yr
+t_ff = 1e8 #np.sqrt(3*np.pi/(32*G.in_units('pc**3 Msol**-1 yr**-2')*x)) # in yr
 SFR = x*10**6/t_ff # in Msol/yr/kpc^2
 
 
