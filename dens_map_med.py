@@ -68,7 +68,7 @@ def load_sim_sideon(mod):
     y.append(s.g['y'])
 
 
-model = ['master', 'semenov', 'evans', 'federrath']
+model = ['master', 'semenov', 'evans', 'federrath_new']
 for m in model:
     load_sim_faceon(m)
 for m in model:    

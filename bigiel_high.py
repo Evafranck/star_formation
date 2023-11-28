@@ -36,54 +36,46 @@ colorlist = ['blue','orange', 'green', 'red']
 def schmidtlaw(sim, filename=None, pretime='50 Myr',
 			   diskheight='2 kpc', rmax='30 kpc', compare=True,
 			   radial=True, bins=10, **kwargs):
-
-	if not radial:
-		raise NotImplementedError("Sorry, only radial Schmidt law currently supported")
-
-
-	if isinstance(pretime, str):
-		pretime = units.Unit(pretime)
-
-	# select stuff
-	diskgas = sim.gas[f.Disc(rmax, diskheight)]
-	diskstars = sim.star[f.Disc(rmax, diskheight)]
-
-	youngstars = np.where(diskstars['tform'].in_units("Myr") >
+    if isinstance(pretime, str):
+        pretime = units.Unit(pretime)
+  
+    cold = f.LowPass('temp', '30000 K')
+    sim_disk = sim.g[cold] 
+    diskgas = sim_disk[f.Disc(rmax, diskheight)]
+    diskstars = sim.star[f.Disc(rmax, diskheight)]
+    
+    youngstars = np.where(diskstars['tform'].in_units("Myr") >
 						  sim.properties['time'].in_units(
 							  "Myr", **sim.conversion_context())
 						  - pretime.in_units('Myr'))[0]
-
-	# calculate surface densities
-	if radial:
-		ps = profile.Profile(diskstars[youngstars], bins=np.linspace(0, 30, 60))
-		pg = profile.Profile(diskgas, bins=np.linspace(0, 30, 60))
-
-	else:
-		# make bins 2 kpc
-		nbins = rmax * 2 / binsize
-		pg, x, y = np.histogram2d(diskgas['x'], diskgas['y'], bins=nbins,
+    
+    if radial:
+        ps = profile.Profile(diskstars[youngstars], bins=np.linspace(0, 30, 60))
+        pg = profile.Profile(diskgas, bins=np.linspace(0, 30, 60))
+    
+    else:
+        nbins = rmax * 2 / binsize
+        pg, x, y = np.histogram2d(diskgas['x'], diskgas['y'], bins=nbins,
 								  weights=diskgas['mass'],
 								  range=[(-rmax, rmax), (-rmax, rmax)])
-		ps, x, y = np.histogram2d(diskstars[youngstars]['x'],
+        ps, x, y = np.histogram2d(diskstars[youngstars]['x'],
 								  diskstars[youngstars]['y'],
 								  weights=diskstars['mass'],
 								  bins=nbins, range=[(-rmax, rmax), (-rmax, rmax)])
-
-	gas_dens = pg['density'].in_units('Msol pc^-2')
-	star_dens = ps['density'].in_units('Msol kpc^-2')/pretime/1e6
-
- 
-
-	if compare:
-		xsigma = np.logspace(np.log10(pg['density'].in_units('Msol pc^-2').min()),
+        
+    gas_dens = pg['density'].in_units('Msol pc^-2')
+    star_dens = ps['density'].in_units('Msol kpc^-2')/pretime/1e6
+    
+    if compare:
+        xsigma = np.logspace(np.log10(pg['density'].in_units('Msol pc^-2').min()),
 							 np.log10(
 								 pg['density'].in_units('Msol pc^-2').max()),
 							 100)
-		ysigma = 2.5e-4 * xsigma ** 1.4  # Kennicutt (1998)
-		xbigiel = np.logspace(0, 1, 10)
-		ybigiel = 10. ** (-2.1) * xbigiel ** 1.0   # Bigiel et al (2007)
-	
-	return gas_dens, star_dens, xsigma, ysigma, xbigiel, ybigiel
+        ysigma = 2.5e-4 * xsigma ** 1.4  # Kennicutt (1998)
+        xbigiel = np.logspace(0, 1, 10)
+        ybigiel = 10. ** (-2.1) * xbigiel ** 1.0   # Bigiel et al (2007)
+        
+    return gas_dens, star_dens, xsigma, ysigma, xbigiel, ybigiel
   
 
 # calculate the Kennicutt-Schmidt law for all simulations
@@ -93,7 +85,6 @@ def KS(mod):
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-10 kpc', '10 kpc')
     s = s_all[disk]
-    #s = s_all
     KS_gas_dens.append(schmidtlaw(s, pretime = '50 Myr', compare = True)[0])
     KS_star_dens.append(schmidtlaw(s, pretime = '50 Myr', compare = True)[1])
     KS_xsigma.append(schmidtlaw(s, pretime = '50 Myr', compare = True)[2])
@@ -109,15 +100,12 @@ fig = plt.figure(figsize=(10, 10))
 
 for n in range(len(simulations)):
     plt.loglog(KS_gas_dens[n], KS_star_dens[n], "+", label = sim_labels[n], color = colorlist[n])
-plt.loglog(KS_xsigma[0], KS_ysigma[0], label='Kennicutt (1998)')
-plt.loglog(x, 0.1*SFR, ls = '-', color = 'grey', label = r'10% $\epsilon_{\rm{ff}}$')
-plt.loglog(x, 0.01*SFR, ls = '--', color = 'grey', label = r'1% $\epsilon_{\rm{ff}}$')
-plt.loglog(x, 0.001*SFR, ls = ':', color = 'grey', label = r'0.1% $\epsilon_{\rm{ff}}$')
+plt.loglog(KS_xbigiel[0], KS_ybigiel[0], label='Bigiel (2007)')
 plt.xlabel('$\Sigma_{gas}$ [M$_\odot$ pc$^{-2}$]')
 plt.ylabel('$\Sigma_{SFR}$ [M$_\odot$ yr$^{-1}$ kpc$^{-2}$]')
 plt.legend(loc = 'lower right', fontsize = 14)
-plt.title('Kennicutt-Schmidt-relation', fontsize = 16)
+plt.title('Bigiel', fontsize = 16)
 plt.tight_layout()
 plt.show()
-plt.savefig('KS_law_high.pdf', bbox_inches='tight')
+plt.savefig('bigiel_high.pdf', bbox_inches='tight')
 

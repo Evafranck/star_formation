@@ -16,8 +16,8 @@ mass = []
 dens_sf = []
 temp_sf = []
 mass_sf = []
-model = ['master', 'semenov', 'evans', 'federrath']
-titlelist = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
+model = ['master', 'semenov', 'federrath_tempcut', 'federrath_new']
+titlelist = ['Threshold-based model', 'Semenov et al. (2016)', r'c) Federrath et al. (2014)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2014)' + '\n' + 'without temperature cut']
 
 for n in range(4):
     s_all = pynbody.load('../low'+'_'+model[n]+'_iso/' + 'low.01000')

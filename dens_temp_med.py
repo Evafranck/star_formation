@@ -16,7 +16,7 @@ mass = []
 dens_sf = []
 temp_sf = []
 mass_sf = []
-model = ['master', 'semenov', 'evans', 'federrath']
+model = ['master', 'semenov', 'evans', 'federrath_new']
 titlelist = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
 
 for n in range(4):
@@ -30,13 +30,13 @@ for n in range(4):
     temp.append(s.g['temp'])
     mass.append(s.g['mass'])
     
-    if (n==0):
+    if (n==0 or n==3):
         new = f.LowPass('age', '1 Gyr')
         s2 = s.s[new]
-        s2.s['n_sf'] = s2.s['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
-        dens_sf.append(s2.s['n_sf'])
-        temp_sf.append(s2.s['tempform'])
-        mass_sf.append(s2.s['massform'])
+        s2.s['n_sf'] = s2['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
+        dens_sf.append(s2['n_sf'])
+        temp_sf.append(s2['tempform'])
+        mass_sf.append(s2['massform'])
         
         print('mass_max = ',np.max(mass))
         print('mass_min = ', np.min(mass))
@@ -60,7 +60,7 @@ for n in range(4):
     hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=400, range = ((-6, 5), (1.5,7.9)))
     im = ax.imshow(np.rot90(hist), cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(4.5), vmax = 10**(7.5)))
 
-    if (n==0):
+    if (n==0 or n==3):
         histform, xbins, ybins = np.histogram2d(np.log10(dens_sf[n]), np.log10(temp_sf[n]), weights=mass_sf[n], bins=400, range = ((-6, 5), (1.5,7.9)))
         #im = ax.imshow(np.rot90(histform), cmap = 'magma_r', extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], norm = matplotlib.colors.LogNorm())
         level = [1e4, 1e6]
