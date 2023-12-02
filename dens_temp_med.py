@@ -9,6 +9,29 @@ import matplotlib.gridspec as gd
 from pynbody import units as units
 from pynbody import array
 import pynbody.filt as f
+import os, struct
+from pynbody import util
+
+f = util.open_('../med_federrath_new_iso/med.starlog', "rb")
+size = struct.unpack(">i", f.read(4))
+iSize = size[0]
+
+datasize = os.path.getsize('../med_federrath_new_iso/med.starlog') - f.tell()
+datasize % iSize
+
+file_structure = np.dtype({'names': ("iord", "iorderGas", "tform",
+                                                    "x", "y", "z",
+                                                    "vx", "vy", "vz",
+                                                    "massform", "rhoform", "tempform",
+                                                    "alphaform", "epsilonform"),
+                                          'formats': ('i4', 'i4', 'f8',
+                                                      'f8', 'f8', 'f8',
+                                                      'f8', 'f8', 'f8',
+                                                      'f8', 'f8', 'f8',
+                                                      'f8', 'f8')})
+
+g = np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
+
 
 density = []
 temp = []
@@ -17,40 +40,52 @@ dens_sf = []
 temp_sf = []
 mass_sf = []
 model = ['master', 'semenov', 'evans', 'federrath_new']
-titlelist = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
+titlelist = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2012)']
 
 for n in range(4):
     s_all = pynbody.load('../med'+'_'+model[n]+'_iso/' + 'med.01000')
     pynbody.analysis.angmom.faceon(s_all)
     s_all.physical_units()
-    disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
-    s = s_all[disk]
+    #disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
+    #s = s_all[disk]
+    s = s_all
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
     density.append(s.g['n'])
     temp.append(s.g['temp'])
     mass.append(s.g['mass'])
     
-    if (n==0 or n==3):
-        new = f.LowPass('age', '1 Gyr')
-        s2 = s.s[new]
-        s2.s['n_sf'] = s2['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
+    if n==0:
+        s2=s.s
+        s2['n_sf'] = s2['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
         dens_sf.append(s2['n_sf'])
         temp_sf.append(s2['tempform'])
         mass_sf.append(s2['massform'])
+        print(s2['rhoform'].units)
+        print(np.max(s2['n_sf']))
+        print(np.min(s2['n_sf']))
+        print(np.max(s2['rhoform']))
+        print(np.min(s2['rhoform']))
+        print(np.max(s2['massform']))
+        print(np.min(s2['massform']))
+    
+    if (n==1 or n==2):
+        dens_sf.append([])
+        temp_sf.append([])
+        mass_sf.append([])
         
-        print('mass_max = ',np.max(mass))
-        print('mass_min = ', np.min(mass))
-        print('temp_max = ', np.max(temp))
-        print('temp_min = ', np.min(temp))
-        print('dens_max = ', np.max(density))
-        print('dens_min = ', np.min(density))
-        print('mass_sf_max = ', np.max(mass_sf))
-        print('mass_sf_min = ', np.min(mass_sf))
-        print('temp_sf_max = ', np.max(temp_sf))
-        print('temp_sf_min = ', np.min(temp_sf))
-        print('dens_sf_max = ', np.max(dens_sf))
-        print('dens_sf_min = ', np.min(dens_sf))
-
+    if n==3:
+        #new = f.LowPass('age', '1 Gyr')
+        g_new = g
+        #g_new['n_sf'] = g_new['rhoform']#.in_units('kg cm^-3')/(1.673*10**(-27))
+        dens_sf.append(g_new['rhoform'])
+        temp_sf.append(g_new['tempform'])
+        mass_sf.append(g_new['massform'])
+        print(np.max(g_new['rhoform']))
+        print(np.min(g_new['rhoform']))
+        print(np.max(g_new['massform']))
+        print(np.min(g_new['massform']))   
+        print(g_new['rhoform'])    
+        
 fig = plt.figure(figsize = (9.92,10))
 gs0 = gd.GridSpec(2, 2, figure=fig, width_ratios=[1,1], height_ratios=[1,1])
 gs0.update(hspace=0.00, wspace=0.00)

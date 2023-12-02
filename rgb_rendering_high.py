@@ -33,7 +33,7 @@ def load_sim_sideon(mod):
 simulations = ['master', 'semenov', 'evans', 'federrath']
 
 # Create a list of simulation labels (for titles)
-sim_labels = [r'a) Threshold-based model', r'b) Semenov et al. (2016)', r'c) Evans et al. (2022)', r'd) Federrath et al. (2014)']
+sim_labels = [r'a) Threshold-based model', r'b) Semenov et al. (2016)', r'c) Evans et al. (2022)', r'd) Federrath et al. (2012)']
 
 for sim_path in simulations:
     load_sim_faceon(sim_path)

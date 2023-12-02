@@ -64,7 +64,7 @@ def surface_density(r, amplitude1, r_eff, n, amplitude2, r_d):
 
 #####################################################################################################
 pathlist = ['../high_master_iso', '../high_semenov_iso', '../high_evans_iso', '../high_federrath_iso']
-simulation = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
+simulation = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2012)']
 ######################################################################################################
 
 fig = plt.figure(figsize=(10,10))
@@ -72,8 +72,8 @@ gs0 = gridspec.GridSpec(1, 1)
 gs0.update(hspace=0.00, wspace=0.00)
 
 
-label = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
-label2 = ['bulge threshold-based model', 'bulge Semenov et al. (2016)', 'bulge Evans et al. (2022)', 'Federrath et al. (2014)']
+label = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2012)']
+label2 = ['bulge threshold-based model', 'bulge Semenov et al. (2016)', 'bulge Evans et al. (2022)', 'Federrath et al. (2012)']
 color = ['blue', 'orange', 'green', 'red']
 color2 = ['blue', 'orange', 'green', 'red']
 loc = [0.8, 0.6]

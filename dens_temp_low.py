@@ -9,6 +9,29 @@ import matplotlib.gridspec as gd
 from pynbody import units as units
 from pynbody import array
 import pynbody.filt as f
+import os, struct
+from pynbody import util
+
+f = util.open_('../low_federrath_new_iso/low.starlog', "rb")
+size = struct.unpack(">i", f.read(4))
+iSize = size[0]
+
+datasize = os.path.getsize('../low_federrath_new_iso/low.starlog') - f.tell()
+datasize % iSize
+
+file_structure = np.dtype({'names': ("iord", "iorderGas", "tform",
+                                                    "x", "y", "z",
+                                                    "vx", "vy", "vz",
+                                                    "massform", "rhoform", "tempform",
+                                                    "alphaform", "epsilonform"),
+                                          'formats': ('i4', 'i4', 'f8',
+                                                      'f8', 'f8', 'f8',
+                                                      'f8', 'f8', 'f8',
+                                                      'f8', 'f8', 'f8',
+                                                      'f8', 'f8')})
+
+g = np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
+
 
 density = []
 temp = []
@@ -17,39 +40,41 @@ dens_sf = []
 temp_sf = []
 mass_sf = []
 model = ['master', 'semenov', 'federrath_tempcut', 'federrath_new']
-titlelist = ['Threshold-based model', 'Semenov et al. (2016)', r'c) Federrath et al. (2014)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2014)' + '\n' + 'without temperature cut']
+titlelist = ['Threshold-based model', 'Semenov et al. (2016)', r'c) Federrath et al. (2012)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2014)' + '\n' + 'without temperature cut']
+
 
 for n in range(4):
     s_all = pynbody.load('../low'+'_'+model[n]+'_iso/' + 'low.01000')
     pynbody.analysis.angmom.faceon(s_all)
     s_all.physical_units()
-    disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
-    s = s_all[disk]
+    #disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
+    #s = s_all[disk]
+    s = s_all
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
     density.append(s.g['n'])
     temp.append(s.g['temp'])
     mass.append(s.g['mass'])
     
-    if (n==0):
-        new = f.LowPass('age', '1 Gyr')
-        s2 = s.s[new]
-        s2.s['n_sf'] = s2.s['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
-        dens_sf.append(s2.s['n_sf'])
-        temp_sf.append(s2.s['tempform'])
-        mass_sf.append(s2.s['massform'])
+    if n==0:
+        s2=s.s
+        s2['n_sf'] = s2['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
+        dens_sf.append(s2['n_sf'])
+        temp_sf.append(s2['tempform'])
+        mass_sf.append(s2['massform'])
+    
+    if (n==1 or n==2):
+        dens_sf.append([])
+        temp_sf.append([])
+        mass_sf.append([])
         
-        print('mass_max = ',np.max(mass))
-        print('mass_min = ', np.min(mass))
-        print('temp_max = ', np.max(temp))
-        print('temp_min = ', np.min(temp))
-        print('dens_max = ', np.max(density))
-        print('dens_min = ', np.min(density))
-        print('mass_sf_max = ', np.max(mass_sf))
-        print('mass_sf_min = ', np.min(mass_sf))
-        print('temp_sf_max = ', np.max(temp_sf))
-        print('temp_sf_min = ', np.min(temp_sf))
-        print('dens_sf_max = ', np.max(dens_sf))
-        print('dens_sf_min = ', np.min(dens_sf))
+    if n==3:
+        #new = f.LowPass('age', '1 Gyr')
+        g_new = g
+        #g_new['n_sf'] = g_new['rhoform']#.in_units('kg cm^-3')/(1.673*10**(-27))
+        dens_sf.append(g_new['rhoform'])
+        temp_sf.append(g_new['tempform'])
+        mass_sf.append(g_new['massform'])
+
 
 fig = plt.figure(figsize = (9.92,10))
 gs0 = gd.GridSpec(2, 2, figure=fig, width_ratios=[1,1], height_ratios=[1,1])
@@ -60,7 +85,7 @@ for n in range(4):
     hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=400, range = ((-6, 5), (1.5,7.9)))
     im = ax.imshow(np.rot90(hist), cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(4.5), vmax = 10**(7.5)))
 
-    if (n==0):
+    if (n==0 or n==3):
         histform, xbins, ybins = np.histogram2d(np.log10(dens_sf[n]), np.log10(temp_sf[n]), weights=mass_sf[n], bins=400, range = ((-6, 5), (1.5,7.9)))
         #im = ax.imshow(np.rot90(histform), cmap = 'magma_r', extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], norm = matplotlib.colors.LogNorm())
         level = [1e4, 1e6]

@@ -64,7 +64,7 @@ def surface_density(r, amplitude1, r_eff, n, amplitude2, r_d):
 
 #####################################################################################################
 pathlist = ['../low_master_iso', '../low_semenov_iso', '../low_federrath_tempcut_iso', '../low_federrath_iso']
-simulation = ['Threshold-based model', 'Semenov et al. (2016)', r'c) Federrath et al. (2014)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2014)' + '\n' + 'without temperature cut']
+simulation = ['Threshold-based model', 'Semenov et al. (2016)', r'c) Federrath et al. (2012)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2012)' + '\n' + 'without temperature cut']
 ######################################################################################################
 
 fig = plt.figure(figsize=(10,10))
@@ -72,8 +72,8 @@ gs0 = gridspec.GridSpec(1, 1)
 gs0.update(hspace=0.00, wspace=0.00)
 
 
-label = ['Threshold-based model', 'Semenov et al. (2016)', r'c) Federrath et al. (2014)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2014)' + '\n' + 'without temperature cut']
-label2 = ['bulge threshold-based model', 'bulge Semenov et al. (2016)', 'bulge Evans et al. (2022)', 'Federrath et al. (2014)']
+label = ['Threshold-based model', 'Semenov et al. (2016)', r'c) Federrath et al. (2012)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2012)' + '\n' + 'without temperature cut']
+label2 = ['bulge threshold-based model', 'bulge Semenov et al. (2016)', 'bulge Evans et al. (2022)', 'Federrath et al. (2012)']
 color = ['blue', 'orange', 'green', 'red']
 color2 = ['blue', 'orange', 'green', 'red']
 for n in range(1):

@@ -68,7 +68,7 @@ for m in model:
     load_sim_sideon(m)
 
 # Titel immer zu bearbeiten
-titlelist = [r'a) Threshold-based model', r'b) Semenov et al. (2016)', r'c) Federrath et al. (2014)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2014)' + '\n' + 'without temperature cut', '', '', '', '']
+titlelist = [r'a) Threshold-based model', r'b) Semenov et al. (2016)', r'c) Federrath et al. (2012)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2014)' + '\n' + 'without temperature cut', '', '', '', '']
 
 fig = plt.figure(figsize = (12, 3.85))
 gs0 = gd.GridSpec(2, 4, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1.07])

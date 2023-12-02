@@ -111,7 +111,7 @@ def sfh(sim, filename=None, massform=True, clear=False, legend=False,
 
 
 model = ['master', 'padoan', 'semenov', 'evans', 'federrath']
-labellist = ['Threshold-based model', 'Padoan et al. (2012)', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2014)']
+labellist = ['Threshold-based model', 'Padoan et al. (2012)', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2012)']
 colorlist = ['blue','orange', 'green', 'red', 'purple']
 
 
