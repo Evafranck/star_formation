@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.gridspec as gd
 from pynbody import units as units
 from pynbody import array
-import pynbody.filt as f
+import pynbody.filt as filt
 import os, struct
 from pynbody import util
 
@@ -45,10 +45,14 @@ titlelist = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (20
 for n in range(4):
     s_all = pynbody.load('../med'+'_'+model[n]+'_iso/' + 'med.01000')
     pynbody.analysis.angmom.faceon(s_all)
+    if n==0:
+        print('Density rho Units before = ', s_all.s['rhoform'].units)
+        print('Mass Units before = ', s_all.s['massform'].units)
+        print('Temperature Units before = ', s_all.s['tempform'].units)
     s_all.physical_units()
-    #disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
-    #s = s_all[disk]
-    s = s_all
+    disk = filt.LowPass('r', '30 kpc') & filt.BandPass('z', '-5 kpc', '5 kpc')
+    s = s_all[disk]
+    #s = s_all
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
     density.append(s.g['n'])
     temp.append(s.g['temp'])
@@ -60,13 +64,17 @@ for n in range(4):
         dens_sf.append(s2['n_sf'])
         temp_sf.append(s2['tempform'])
         mass_sf.append(s2['massform'])
-        print(s2['rhoform'].units)
-        print(np.max(s2['n_sf']))
-        print(np.min(s2['n_sf']))
-        print(np.max(s2['rhoform']))
-        print(np.min(s2['rhoform']))
-        print(np.max(s2['massform']))
-        print(np.min(s2['massform']))
+        print('Maximum Density n = ', np.max(s2['n_sf']))
+        print('Minimum Density n = ', np.min(s2['n_sf']))
+        print('Maximum Density rho = ', np.max(s2['rhoform']))
+        print('Minimum Density rho = ', np.min(s2['rhoform']))
+        print('Maximum Temperature = ', np.max(s2['tempform']))
+        print('Minimum Temperature = ', np.min(s2['tempform']))
+        print('Maximum Mass = ', np.max(s2['massform']))
+        print('Minimum Mass = ', np.min(s2['massform']))
+        print('Density rho Units after = ', s2['rhoform'].units)
+        print('Mass Units after = ', s2['massform'].units)
+        print('Temperature Units after = ', s2['tempform'].units)
     
     if (n==1 or n==2):
         dens_sf.append([])
@@ -74,17 +82,22 @@ for n in range(4):
         mass_sf.append([])
         
     if n==3:
-        #new = f.LowPass('age', '1 Gyr')
+        new = filt.LowPass('age', '1 Gyr')
+        #g_new = g[new]
         g_new = g
-        #g_new['n_sf'] = g_new['rhoform']#.in_units('kg cm^-3')/(1.673*10**(-27))
-        dens_sf.append(g_new['rhoform'])
+        #g_new['n_sf'] = (g_new['rhoform']*10**9*2*10**30*units.kg/(2.93*10**64*units.cm**3))/(1.673*10**(-27))
+        dens_sf.append(g_new['rhoform']*40.8) # times 10**9*2*10**30/(2.93*10**64)/(1.673*10**(-27)))) = 40.8 in units of cm^-3
         temp_sf.append(g_new['tempform'])
-        mass_sf.append(g_new['massform'])
-        print(np.max(g_new['rhoform']))
-        print(np.min(g_new['rhoform']))
-        print(np.max(g_new['massform']))
-        print(np.min(g_new['massform']))   
-        print(g_new['rhoform'])    
+        mass_sf.append(g_new['massform']*10**9) # in units of M_sun
+        print('Maximum Density n = ', np.max(g_new['rhoform']*40.8))
+        #print('Minimum Density n = ', np.min(dens_sf[0]))
+        print('Maximum Temperature = ', np.max(g_new['tempform']))
+        print('Minimum Temperature = ', np.min(g_new['tempform']))
+        print('Maximum Density rho = ', np.max(g_new['rhoform']))
+        print('Minimum Density rho = ', np.min(g_new['rhoform']))
+        print('Maximum Mass = ', np.max(g_new['massform'])*10**9)
+        print('Minimum Mass = ', np.min(g_new['massform'])*10**9)
+            
         
 fig = plt.figure(figsize = (9.92,10))
 gs0 = gd.GridSpec(2, 2, figure=fig, width_ratios=[1,1], height_ratios=[1,1])
@@ -96,6 +109,7 @@ for n in range(4):
     im = ax.imshow(np.rot90(hist), cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(4.5), vmax = 10**(7.5)))
 
     if (n==0 or n==3):
+        #print(np.log10(float(dens_sf[-1])))
         histform, xbins, ybins = np.histogram2d(np.log10(dens_sf[n]), np.log10(temp_sf[n]), weights=mass_sf[n], bins=400, range = ((-6, 5), (1.5,7.9)))
         #im = ax.imshow(np.rot90(histform), cmap = 'magma_r', extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], norm = matplotlib.colors.LogNorm())
         level = [1e4, 1e6]
