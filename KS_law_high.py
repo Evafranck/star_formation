@@ -33,7 +33,7 @@ sim_labels = [r'Threshold-based model', r'Semenov et al. (2016)', r'Evans et al.
 colorlist = ['blue','orange', 'green', 'red']
 
 # Calculate the Kennicutt-Schmidt law for a given simulation (modified from pynbody documentation)
-def schmidtlaw(sim, filename=None, pretime='50 Myr',
+def schmidtlaw(sim, filename=None, pretime='10 Myr',
 			   diskheight='2 kpc', rmax='30 kpc', compare=True,
 			   radial=True, bins=10, **kwargs):
 
@@ -43,11 +43,12 @@ def schmidtlaw(sim, filename=None, pretime='50 Myr',
 
 	if isinstance(pretime, str):
 		pretime = units.Unit(pretime)
-
-	# select stuff
-	diskgas = sim.gas[f.Disc(rmax, diskheight)]
+  
+	gas = sim.gas[f.Disc(rmax, diskheight)]
+	cold = f.LowPass('temp', '30000 K')
+	diskgas = gas[cold]
 	diskstars = sim.star[f.Disc(rmax, diskheight)]
-
+    
 	youngstars = np.where(diskstars['tform'].in_units("Myr") >
 						  sim.properties['time'].in_units(
 							  "Myr", **sim.conversion_context())
@@ -93,13 +94,12 @@ def KS(mod):
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-10 kpc', '10 kpc')
     s = s_all[disk]
-    #s = s_all
-    KS_gas_dens.append(schmidtlaw(s, pretime = '50 Myr', compare = True)[0])
-    KS_star_dens.append(schmidtlaw(s, pretime = '50 Myr', compare = True)[1])
-    KS_xsigma.append(schmidtlaw(s, pretime = '50 Myr', compare = True)[2])
-    KS_ysigma.append(schmidtlaw(s, pretime = '50 Myr', compare = True)[3])
-    KS_xbigiel.append(schmidtlaw(s, pretime = '50 Myr', compare = True)[4])
-    KS_ybigiel.append(schmidtlaw(s, pretime = '50 Myr', compare = True)[5])
+    KS_gas_dens.append(schmidtlaw(s, pretime = '10 Myr', compare = True)[0])
+    KS_star_dens.append(schmidtlaw(s, pretime = '10 Myr', compare = True)[1])
+    KS_xsigma.append(schmidtlaw(s, pretime = '10 Myr', compare = True)[2])
+    KS_ysigma.append(schmidtlaw(s, pretime = '10 Myr', compare = True)[3])
+    KS_xbigiel.append(schmidtlaw(s, pretime = '10 Myr', compare = True)[4])
+    KS_ybigiel.append(schmidtlaw(s, pretime = '10 Myr', compare = True)[5])
 
 for sim_path in simulations:
     KS(sim_path)

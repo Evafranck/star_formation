@@ -12,26 +12,23 @@ import pynbody.filt as filt
 import os, struct
 from pynbody import util
 
-f = util.open_('../med_federrath_new_iso/med.starlog', "rb")
-size = struct.unpack(">i", f.read(4))
-iSize = size[0]
-
-datasize = os.path.getsize('../med_federrath_new_iso/med.starlog') - f.tell()
-datasize % iSize
-
-file_structure = np.dtype({'names': ("iord", "iorderGas", "tform",
-                                                    "x", "y", "z",
-                                                    "vx", "vy", "vz",
-                                                    "massform", "rhoform", "tempform",
-                                                    "alphaform", "epsilonform"),
-                                          'formats': ('i4', 'i4', 'f8',
-                                                      'f8', 'f8', 'f8',
-                                                      'f8', 'f8', 'f8',
-                                                      'f8', 'f8', 'f8',
-                                                      'f8', 'f8')})
-
-g = np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
-
+def starlog(filename):
+    f = util.open_(filename, "rb")
+    size = struct.unpack(">i", f.read(4))
+    iSize = size[0]
+    datasize = os.path.getsize(filename) - f.tell()
+    datasize % iSize
+    file_structure = np.dtype({'names': ("iord", "iorderGas", "tform",
+                                                        "x", "y", "z",
+                                                        "vx", "vy", "vz",
+                                                        "massform", "rhoform", "tempform",
+                                                        "alphaform", "epsilonform"),
+                                              'formats': ('i4', 'i4', 'f8',
+                                                          'f8', 'f8', 'f8',
+                                                          'f8', 'f8', 'f8',
+                                                          'f8', 'f8', 'f8',
+                                                          'f8', 'f8')})
+    return np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
 
 density = []
 temp = []
@@ -83,8 +80,8 @@ for n in range(4):
         
     if n==3:
         new = filt.LowPass('age', '1 Gyr')
-        #g_new = g[new]
-        g_new = g
+        filename = '../med_federrath_new_iso/med.starlog'
+        g_tempcut = starlog(filename)
         #g_new['n_sf'] = (g_new['rhoform']*10**9*2*10**30*units.kg/(2.93*10**64*units.cm**3))/(1.673*10**(-27))
         dens_sf.append(g_new['rhoform']*40.8) # times 10**9*2*10**30/(2.93*10**64)/(1.673*10**(-27)))) = 40.8 in units of cm^-3
         temp_sf.append(g_new['tempform'])
