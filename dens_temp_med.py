@@ -36,8 +36,8 @@ mass = []
 dens_sf = []
 temp_sf = []
 mass_sf = []
-model = ['master', 'semenov', 'evans', 'federrath_new']
-titlelist = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2012)']
+model = ['master', 'padoan', 'evans', 'federrath_new']
+titlelist = ['Threshold-based model', 'Padoan et al. (2012)', 'Evans et al. (2022)', 'Federrath & Klessen (2012)' + '\n' + 'without temperature cut']
 
 for n in range(4):
     s_all = pynbody.load('../med'+'_'+model[n]+'_iso/' + 'med.01000')
@@ -81,7 +81,7 @@ for n in range(4):
     if n==3:
         new = filt.LowPass('age', '1 Gyr')
         filename = '../med_federrath_new_iso/med.starlog'
-        g_tempcut = starlog(filename)
+        g_new = starlog(filename)
         #g_new['n_sf'] = (g_new['rhoform']*10**9*2*10**30*units.kg/(2.93*10**64*units.cm**3))/(1.673*10**(-27))
         dens_sf.append(g_new['rhoform']*40.8) # times 10**9*2*10**30/(2.93*10**64)/(1.673*10**(-27)))) = 40.8 in units of cm^-3
         temp_sf.append(g_new['tempform'])

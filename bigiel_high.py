@@ -29,7 +29,7 @@ SFR = x*10**6/t_ff # in Msol/yr/kpc^2
 simulations = ['master', 'semenov', 'evans', 'federrath']
 
 # Create a list of simulation labels and colors
-sim_labels = [r'Threshold-based model', r'Semenov et al. (2016)', r'Evans et al. (2022)', r'Federrath et al. (2012)']
+sim_labels = [r'Threshold-based model', r'Semenov et al. (2016)', r'Evans et al. (2022)', r'Federrath & Klessen (2012)']
 colorlist = ['blue','orange', 'green', 'red']
 
 # Calculate the Kennicutt-Schmidt law for a given simulation (modified from pynbody documentation)

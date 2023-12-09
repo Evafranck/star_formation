@@ -26,10 +26,10 @@ SFR = x*10**6/t_ff # in Msol/yr/kpc^2
 
 
 # Create a list of simulation paths
-simulations = ['master', 'semenov', 'evans', 'federrath']
+simulations = ['master', 'padoan', 'evans', 'federrath']
 
 # Create a list of simulation labels and colors
-sim_labels = [r'Threshold-based model', r'Semenov et al. (2016)', r'Evans et al. (2022)', r'Federrath et al. (2012)']
+sim_labels = [r'Threshold-based model', r'Padoan et al. (2012)', r'Evans et al. (2022)', r'Federrath & Klessen (2012)' + '\n' + 'without temperature cut']
 colorlist = ['blue','orange', 'green', 'red']
 
 # Calculate the Kennicutt-Schmidt law for a given simulation (modified from pynbody documentation)
@@ -44,9 +44,9 @@ def schmidtlaw(sim, filename=None, pretime='10 Myr',
 	if isinstance(pretime, str):
 		pretime = units.Unit(pretime)
   
-	gas = sim.gas[f.Disc(rmax, diskheight)]
-	cold = f.LowPass('temp', '30000 K')
-	diskgas = gas[cold]
+	diskgas = sim.gas[f.Disc(rmax, diskheight)]
+	#cold = f.LowPass('temp', '30000 K')
+	#diskgas = gas[cold]
 	diskstars = sim.star[f.Disc(rmax, diskheight)]
     
 	youngstars = np.where(diskstars['tform'].in_units("Myr") >

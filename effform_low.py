@@ -9,6 +9,8 @@ from pynbody import units
 import pynbody.filt as f
 import glob
 import scipy.stats
+from pynbody import util
+import os, struct
 
 plt.rc('axes', linewidth=0.5)
 plt.rcParams['xtick.direction'] = 'in'
@@ -42,81 +44,76 @@ x = []
 y = []
 bins = 300
 
+def starlog(filename):
+    f = util.open_(filename, "rb")
+    size = struct.unpack(">i", f.read(4))
+    iSize = size[0]
+    datasize = os.path.getsize(filename) - f.tell()
+    datasize % iSize
+    file_structure = np.dtype({'names': ("iord", "iorderGas", "tform",
+                                                        "x", "y", "z",
+                                                        "vx", "vy", "vz",
+                                                        "massform", "rhoform", "tempform",
+                                                        "alphaform", "epsilonform"),
+                                              'formats': ('i4', 'i4', 'f8',
+                                                          'f8', 'f8', 'f8',
+                                                          'f8', 'f8', 'f8',
+                                                          'f8', 'f8', 'f8',
+                                                          'f8', 'f8')})
+    return np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
+
+def massweight(array_x, array_y, array_key, array_mass, b, range_tuple):
+    hist, xbin, ybin = np.histogram2d(array_x,array_y,weights=array_key*array_mass, bins=b, range = range_tuple)
+    mass, xbin, ybin = np.histogram2d(array_x,array_y,weights=array_mass, bins=b, range=range_tuple)
+    return hist/mass
+
 def load_sim_faceon(mod):
     s = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units()
-    key.append(s.g['effform'])
-    print((s.g['effform']).max())
-    print(np.median(s.g['effform']))
-    x.append(s.g['x'])
-    y.append(s.g['y'])
+    if (mod == 'federrath_tempcut' or mod == 'federrath_new'):
+        filename = '../low_'+mod+'_iso/low.starlog'
+        g = starlog(filename)
+        key.append(g['epsilonform'])
+        x.append(g['x'])
+        y.append(g['y'])
+    else:
+        key.append(s.g['effform'])
+        x.append(s.g['x'])
+        y.append(s.g['y'])
 
-def load_sim_sideon(mod):
-    s = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
-    pynbody.analysis.angmom.sideon(s)
-    s.physical_units()
-    key.append(s.g['effform'])
-    x.append(s.g['x'])
-    y.append(s.g['y'])
-
-
-model = ['evans', 'padoan', 'federrath_tempcut', 'federrath_new']
+        
+model = ['semenov', 'padoan', 'federrath_tempcut', 'federrath_new']
 for m in model:
     load_sim_faceon(m)
-for m in model:    
-    load_sim_sideon(m)
+
+
+print(len(key))
+print(len(x))
+print(len(y))
 
 # Titel immer zu bearbeiten
-titlelist = [r'a) Threshold-based model', r'b) Padoan et al. (2012)',  r'c) Federrath et al. (2012)' + '\n' + 'with temperature cut', r'd) Federrath et al. (2014)' + '\n' + 'without temperature cut', '', '', '', '',]
+titlelist = [r'a) Semenov et al. (2016)', r'b) Padoan et al. (2012)',  r'c) Federrath & Klessen (2012)' + '\n' + 'with temperature cut', r'd) Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '',]
+vmin_list = [0, 0, 0, 0]
+vmax_list = [0.2, 0.2, 0.2, 0.2]
+fig = plt.figure(figsize = (10, 7))
+gs0 = gd.GridSpec(2, 2)
+fig.suptitle('Efficiency in SF regions (low resolution)')
+for n in range(4):
+    ax = fig.add_subplot(gs0[n])
+    print(len(key[n]))
+    print(len(x[n]))
+    print(len(y[n]))
+    hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='mean', bins=bins, range = ((-50, 50), (-50,50)))
+    im = ax.imshow(hist, extent=(-50,50,-50,50), cmap='CMRmap_r', vmin=vmin_list[n], vmax=vmax_list[n], origin='lower')
+    ax.set_xlim(-19.99, 19.99)
+    ax.set_ylim(-19.99, 19.99)
+    ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
+    ax.set_xticklabels([])
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size = '5%', pad = 0.05)
+    fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Efficiency $\epsilon$', size=12)
 
-fig = plt.figure(figsize = (12, 3.85))
-gs0 = gd.GridSpec(2, 4, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1.066])
-gs0.update(hspace=0.00, wspace=0.00)
-
-for n in range(8):
-    # face-on
-    if (n<4):
-        ax = fig.add_subplot(gs0[n])
-        hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='mean', bins=bins, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(hist, extent=(-50,50,-50,50), cmap='CMRmap_r', vmin= 0,vmax = 1)
-        ax.set_xlim(-19.99, 19.99)
-        ax.set_ylim(-19.99, 19.99)
-        ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
-        ax.set_xticklabels([])
-        if (n == 3):
-            divider = make_axes_locatable(ax)
-            cax = divider.append_axes('right', size = '5%', pad = 0.05)
-            fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'effiency $\epsilon$', size=12)
-        if (n == 0):
-            ax.set_ylabel('y [kpc]', fontsize = 12)
-
-        else:
-            ax.set_yticklabels([])
-
-    # side-on
-    if (n>3): 
-        ax = fig.add_subplot(gs0[n])
-        base = plt.gca().transData
-        rot = transforms.Affine2D().rotate_deg(90)
-        hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='mean', bins=bins, range = ((-50, 50), (-50,50)))
-        im = ax.imshow(hist, extent=(-50,50,-50,50), cmap='CMRmap_r', transform = rot+base,  vmin= 0,vmax = 1)
-        ax.set_aspect(1./ax.get_data_ratio())
-        ax.set_xlim(-19.99, 19.99)
-        ax.set_ylim(-5.99, 5.99)
-        ax.set_xlabel('x [kpc]', fontsize = 12)        
-        if (n == 7):
-            divider = make_axes_locatable(ax)
-            cax = divider.append_axes('right', size = '5%', pad = 0.05)
-            fig.colorbar(im, cax = cax, orientation='vertical')
-
-        if (n == 4):    
-            ax.set_ylabel('z [kpc]', fontsize = 12)
-        
-        else:
-            ax.set_yticklabels([])
-
-fig.suptitle('SFE in SF regions (low resolution)')
 plt.savefig('effform_low.pdf', bbox_inches='tight')
 plt.clf()
 

@@ -38,7 +38,7 @@ fig = plt.figure(figsize=(15,5))
 gs0 = gridspec.GridSpec(1, 3, height_ratios = [1], width_ratios = [1, 1, 1])
 gs0.update(hspace=0.00, wspace=0.00)
 
-label = ['Threshold-based model', 'Semenov et al. (2016)', 'Evans et al. (2022)', 'Federrath et al. (2012)']
+label = ['Threshold-based model', 'Padoan et al. (2012)', 'Evans et al. (2022)', 'Federrath & Klessen (2012)' + '\n' + 'without temperature cut']
 color = ['blue', 'orange', 'green', 'red']
 loc = [0.4, 0.6]
 for n in range(3):

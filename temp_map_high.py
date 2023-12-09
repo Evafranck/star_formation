@@ -49,7 +49,9 @@ def load_sim_faceon(mod):
     pynbody.analysis.angmom.faceon(s_all)
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
-    s = s_all[disk]
+    s_disk = s_all[disk]
+    cold = f.LowPass('temp', '30000 K')
+    s = s_disk.g[cold]
     key.append(s.g['temp'])
     #tempform.append(s.s['tempform'])
     print(s.g['temp'].max())
@@ -64,7 +66,9 @@ def load_sim_sideon(mod):
     pynbody.analysis.angmom.sideon(s_all)
     s_all.physical_units()
     disk = f.LowPass('r', '30 kpc') & f.BandPass('z', '-5 kpc', '5 kpc')
-    s = s_all[disk]
+    s_disk = s_all[disk]
+    cold = f.LowPass('temp', '30000 K')
+    s = s_disk.g[cold]
     key.append(s.g['temp'])
     #tempform.append(s.s['tempform'])
     x.append(s.g['x'])
@@ -73,14 +77,14 @@ def load_sim_sideon(mod):
     y_s.append(s.s['y'])
 
 
-model = ['master', 'semenov', 'evans', 'federrath']
+model = ['master', 'padoan', 'evans', 'federrath']
 for m in model:
     load_sim_faceon(m)
 for m in model:    
     load_sim_sideon(m)
 
 # Titel immer zu bearbeiten
-titlelist = [r'a) Threshold-based model', r'b) Semenov et al. (2016)', r'c) Evans et al. (2022)', r'd) Federrath et al. (2012)', '', '', '', '',]
+titlelist = [r'a) Threshold-based model', r'b) Padoan et al. (2012)', r'c) Evans et al. (2022)', r'd) Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '',]
 
 fig = plt.figure(figsize = (12, 3.85))
 gs0 = gd.GridSpec(2, 4, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1.07])
@@ -131,6 +135,6 @@ for n in range(8):
 
 
 fig.suptitle('Gas temperature (high resolution)')
-plt.savefig('temp_map_high.pdf', bbox_inches='tight')
+plt.savefig('temp_map_high_cold.pdf', bbox_inches='tight')
 plt.clf()
 

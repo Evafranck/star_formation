@@ -70,13 +70,13 @@ def load_sim_sideon(mod):
     #print(mod, s.g['rho'].min(), s.g['rho'].max(), np.median(s.g['rho']))
     print(mod, 'dens_min = ', s['n'].min(), 'dens_max = ', s['n'].max(), 'dens_mean = ', np.mean(s['n']))
     
-model = ['master', 'semenov', 'evans', 'federrath']
+model = ['master', 'padoan', 'federrath_tempcut', 'federrath_new']
 for m in model:
     load_sim_faceon(m)
 for m in model:    
     load_sim_sideon(m)
     
-titlelist = ['a) Threshold-based model', 'b) Semenov et al. (2012)', 'c) Federrath et al. (2012)' + '\n' + 'with temperature cut', 'd) Federrath et al. (2012)' + '\n' + 'without temperature cut', '', '', '', '']
+titlelist = ['a) Threshold-based model', 'b) Padoan et al. (2012)', 'c) Federrath & Klessen (2012)' + '\n' + 'with temperature cut', 'd) Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '']
 fig = plt.figure(figsize = (12,3.73))
 gs0 = gd.GridSpec(2, 4, figure=fig, height_ratios = [1, 0.258], width_ratios = [1, 1, 1, 1.072])
 gs0.update(hspace=0.00, wspace=0.00)

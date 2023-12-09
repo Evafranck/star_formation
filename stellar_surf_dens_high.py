@@ -44,7 +44,7 @@ bins = 350
 density = []
 x = []
 y = []
-model = ['master', 'semenov', 'evans', 'federrath']
+model = ['master', 'padoan', 'evans', 'federrath']
 
 def load_sim_faceon(mod):
     s_all = pynbody.load('../high'+'_'+mod+'_iso/' + 'high.01000')
@@ -75,7 +75,7 @@ for m in model:
 for m in model:    
     load_sim_sideon(m)
     
-titlelist = ['a) Threshold-based model', 'b) Semenov et al. (2012)', 'c) Evans et al. (2022)', 'd) Federrath et al. (2012)' + '\n' + 'without temperature cut', '', '', '', '']
+titlelist = ['a) Threshold-based model', 'b) Padoan et al. (2012)', 'c) Evans et al. (2022)', 'd) Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '']
 fig = plt.figure(figsize = (12,3.73))
 gs0 = gd.GridSpec(2, 4, figure=fig, height_ratios = [1, 0.258], width_ratios = [1, 1, 1, 1.072])
 gs0.update(hspace=0.00, wspace=0.00)
