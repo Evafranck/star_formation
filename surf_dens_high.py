@@ -50,14 +50,14 @@ gas_vert_surf_dens = []
 
 # Create a list of simulation paths
 #simulations = ['../threshold', '../federrath', 'master', 'federrath']
-simulations = ['master', 'padoan', 'federrath', 'federrath_tempcut']
+simulations = ['master', 'padoan', 'evans', 'federrath']
 
 # Load a slice of the simulation snapshots faceon and sideon
 def load_sim_faceon(mod):
     if (mod == '../threshold' or mod == '../federrath'):
         s_all = pynbody.load(mod + '/halo.00128')
     else:
-        s_all = pynbody.load('../low'+'_'+mod+'_iso/' +'low.01000')
+        s_all = pynbody.load('../high'+'_'+mod+'_iso/' +'high.01000')
     pynbody.analysis.angmom.faceon(s_all)
     s_all.physical_units()
     #new = f.LowPass('age', s_all.properties['time'].in_units('Gyr'))
@@ -84,7 +84,7 @@ for m in simulations:
     
 
 
-titlelist = ['Threshold-based model', 'Padoan et al. (2012)', 'Federrath & Klessen (2012)' + '\n' + 'without temperature cut', 'Federrath & Klessen (2012)' + '\n' + 'with temperature cut', '', '', '', '']
+titlelist = ['Threshold-based model', 'Padoan et al. (2012)', 'Evans et al. (2022)', 'Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '']
 #titlelist = ['Threshold-based model' + '\n' + 'Jakob Herpichs ICs', 'Federrath & Klessen (2012)' + '\n' + 'Jakob Herpichs ICs', 'Threshold-based model' + '\n' + 'AGORA ICs', 'Federrath & Klessen (2012)' + '\n' + 'AGORA ICs', '', '', '', ''] # r'Hopkins et al. (2013)' + '\n' + 'with temperature cut', r'Hopkins et al. (2013)' + '\n' + 'without temperature cut'] # 'Federrath & Klessen (2012)' + '\n' + 'with temperature cut']
 
 fig = plt.figure(figsize = (11,5))
@@ -113,7 +113,7 @@ for n in range(2):
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_title('b) Radial surface density profile of gas', fontsize = 14)
         
-plt.savefig('surf_dens_low.pdf', bbox_inches = 'tight')
+plt.savefig('surf_dens_high.pdf', bbox_inches = 'tight')
 
 
 

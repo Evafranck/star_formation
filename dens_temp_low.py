@@ -19,8 +19,10 @@ mass = []
 dens_sf = []
 temp_sf = []
 mass_sf = []
-model = ['../threshold', '../federrath', '../low_master_iso', '../low_federrath_new_iso'] # '../low_hopkins_iso', '../low_federrath_tempcut_iso']
-titlelist = ['Threshold-based model' + '\n' + 'Jakob Herpichs ICs', 'Federrath & Klessen (2012)' + '\n' + 'Jakob Herpichs ICs', 'Threshold-based model' + '\n' + 'AGORA ICs', 'Federrath & Klessen (2012)' + '\n' + 'AGORA ICs'] # r'Hopkins et al. (2013)' + '\n' + 'with temperature cut', r'Hopkins et al. (2013)' + '\n' + 'without temperature cut'] # 'Federrath & Klessen (2012)' + '\n' + 'with temperature cut']
+model = ['../low_master_iso', '../low_padoan_iso', '../low_federrath_iso', '../low_federrath_tempcut_iso']
+titlelist = ['Threshold-based model', 'Padoan et al. (2012)', 'Federrath & Klessen (2012)' + '\n' + 'without temperature cut', 'Federrath & Klessen (2012)' + '\n' + 'with temperature cut']
+#model = ['../threshold', '../federrath', '../low_master_iso', '../low_federrath_new_iso'] # '../low_hopkins_iso', '../low_federrath_tempcut_iso']
+#titlelist = ['Threshold-based model' + '\n' + 'Jakob Herpichs ICs', 'Federrath & Klessen (2012)' + '\n' + 'Jakob Herpichs ICs', 'Threshold-based model' + '\n' + 'AGORA ICs', 'Federrath & Klessen (2012)' + '\n' + 'AGORA ICs'] # r'Hopkins et al. (2013)' + '\n' + 'with temperature cut', r'Hopkins et al. (2013)' + '\n' + 'without temperature cut'] # 'Federrath & Klessen (2012)' + '\n' + 'with temperature cut']
 
 
 def starlog(filename):
@@ -135,4 +137,4 @@ for n in range(4):
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Mass [M$_{\odot}$]', size=12)
         ax.legend(loc = 'lower right')
 fig.tight_layout()
-plt.savefig('dens_temp_low_ICs_comparison.pdf')
+plt.savefig('dens_temp_low.pdf')

@@ -38,7 +38,8 @@ plt.rcParams['legend.shadow'] = False
 plt.rcParams['legend.edgecolor'] = 'darkgray'
 plt.rcParams['patch.linewidth'] = 1
 
-young = f.LowPass('age', '1.49 Gyr')
+#young = f.LowPass('age', '1.49 Gyr')
+young = f.LowPass('age', '100 Myr')
 bins = 350
 
 density = []
@@ -128,6 +129,6 @@ for n in range(4, 8):
     ax.set_xlim(-19.99, 19.99)
     ax.set_ylim(-5, 5)
 
-plt.savefig('stellar_dens_med.pdf', bbox_inches='tight')
+plt.savefig('stellar_dens_med_100Myr.pdf', bbox_inches='tight')
 plt.clf()
 

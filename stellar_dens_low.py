@@ -39,14 +39,17 @@ plt.rcParams['legend.edgecolor'] = 'darkgray'
 plt.rcParams['patch.linewidth'] = 1
 
 young = f.LowPass('age', '1.49 Gyr')
-bins = 350
+#young = f.LowPass('age', '100 Myr')
+bins = 300
 
 density = []
 x = []
 y = []
 
 # Create a list of simulation paths
-simulations = ['../threshold', '../federrath', 'master', 'federrath']
+#simulations = ['../threshold', '../federrath', 'master', 'federrath']
+simulations = ['master', 'padoan', 'federrath', 'federrath_tempcut']
+
 
 # Load a slice of the simulation snapshots faceon and sideon
 def load_sim_faceon(mod):
@@ -87,8 +90,8 @@ for m in simulations:
 for m in simulations:    
     load_sim_sideon(m)
     
-#titlelist = ['a) Threshold-based model', 'b) Padoan et al. (2012)', 'c) Federrath & Klessen (2012)' + '\n' + 'with temperature cut', 'd) Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '']
-titlelist = ['Threshold-based model' + '\n' + 'Jakob Herpichs ICs', 'Federrath & Klessen (2012)' + '\n' + 'Jakob Herpichs ICs', 'Threshold-based model' + '\n' + 'AGORA ICs', 'Federrath & Klessen (2012)' + '\n' + 'AGORA ICs', '', '', '', ''] # r'Hopkins et al. (2013)' + '\n' + 'with temperature cut', r'Hopkins et al. (2013)' + '\n' + 'without temperature cut'] # 'Federrath & Klessen (2012)' + '\n' + 'with temperature cut']
+titlelist = ['a) Threshold-based model', 'b) Padoan et al. (2012)', 'c) Federrath & Klessen (2012)' + '\n' + 'with temperature cut', 'd) Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '']
+#titlelist = ['Threshold-based model' + '\n' + 'Jakob Herpichs ICs', 'Federrath & Klessen (2012)' + '\n' + 'Jakob Herpichs ICs', 'Threshold-based model' + '\n' + 'AGORA ICs', 'Federrath & Klessen (2012)' + '\n' + 'AGORA ICs', '', '', '', ''] # r'Hopkins et al. (2013)' + '\n' + 'with temperature cut', r'Hopkins et al. (2013)' + '\n' + 'without temperature cut'] # 'Federrath & Klessen (2012)' + '\n' + 'with temperature cut']
 
 fig = plt.figure(figsize = (12,3.73))
 gs0 = gd.GridSpec(2, 4, figure=fig, height_ratios = [1, 0.258], width_ratios = [1, 1, 1, 1.072])
