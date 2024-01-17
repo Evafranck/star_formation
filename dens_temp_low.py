@@ -12,6 +12,17 @@ from pynbody import filt
 import os, struct
 from pynbody import util
 
+
+density = []
+temp = []
+mass = []
+dens_sf = []
+temp_sf = []
+mass_sf = []
+model = ['../threshold', '../federrath', '../low_master_iso', '../low_federrath_new_iso'] # '../low_hopkins_iso', '../low_federrath_tempcut_iso']
+titlelist = ['Threshold-based model' + '\n' + 'Jakob Herpichs ICs', 'Federrath & Klessen (2012)' + '\n' + 'Jakob Herpichs ICs', 'Threshold-based model' + '\n' + 'AGORA ICs', 'Federrath & Klessen (2012)' + '\n' + 'AGORA ICs'] # r'Hopkins et al. (2013)' + '\n' + 'with temperature cut', r'Hopkins et al. (2013)' + '\n' + 'without temperature cut'] # 'Federrath & Klessen (2012)' + '\n' + 'with temperature cut']
+
+
 def starlog(filename):
     f = util.open_(filename, "rb")
     size = struct.unpack(">i", f.read(4))
@@ -30,18 +41,11 @@ def starlog(filename):
                                                           'f8', 'f8')})
     return np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
 
-
-density = []
-temp = []
-mass = []
-dens_sf = []
-temp_sf = []
-mass_sf = []
-model = ['master', 'padoan', 'federrath_tempcut', 'federrath_new']
-titlelist = ['Threshold-based model', 'Padoan et al. (2012)',  'Federrath & Klessen (2012)' + '\n' + 'with temperature cut', 'Federrath & Klessen (2012)' + '\n' + 'without temperature cut']
-
-for n in range(4):
-    s_all = pynbody.load('../low'+'_'+model[n]+'_iso/' + 'low.01000')
+def load_sim_faceon(mod):
+    if (mod == '../threshold' or mod == '../federrath'):
+        s_all = pynbody.load(mod + '/halo.00128')
+    else:
+        s_all = pynbody.load(mod + '/low.01000')
     pynbody.analysis.angmom.faceon(s_all)
     s_all.physical_units()
     disk = filt.LowPass('r', '30 kpc') & filt.BandPass('z', '-5 kpc', '5 kpc')
@@ -50,65 +54,45 @@ for n in range(4):
     density.append(s.g['n'])
     temp.append(s.g['temp'])
     mass.append(s.g['mass'])
-    
-    if n==0:
-        s2=s.s
-        s2['n_sf'] = s2['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
-        dens_sf.append(s2['n_sf'])
-        temp_sf.append(s2['tempform'])
-        mass_sf.append(s2['massform'])
-        print('Maximum Density n = ', np.max(s2['n_sf']))
-        print('Minimum Density n = ', np.min(s2['n_sf']))
-        print('Maximum Density rho = ', np.max(s2['rhoform']))
-        print('Minimum Density rho = ', np.min(s2['rhoform']))
-        print('Maximum Temperature = ', np.max(s2['tempform']))
-        print('Minimum Temperature = ', np.min(s2['tempform']))
-        print('Maximum Mass = ', np.max(s2['massform']))
-        print('Minimum Mass = ', np.min(s2['massform']))
-        print('Density rho Units after = ', s2['rhoform'].units)
-        print('Mass Units after = ', s2['massform'].units)
-        print('Temperature Units after = ', s2['tempform'].units)
-    
-    if (n==1):
+    if (mod == '../low_federrath_tempcut_iso' or mod == '../low_federrath_new_iso' or mod == '../low_hopkins_tempcut_iso' or mod == '../low_hopkins_iso'):
+        new = filt.LowPass('age', '1 Gyr')
+        filename = mod + '/low.starlog'
+        g_tempcut = starlog(filename)
+        dens_sf.append(g_tempcut['rhoform']*40.8)
+        temp_sf.append(g_tempcut['tempform'])
+        mass_sf.append(g_tempcut['massform']*10**9)
+    elif (mod == '../federrath'):
+        new = filt.LowPass('age', '1 Gyr')
+        filename = mod + '/halo.starlog'
+        g_tempcut = starlog(filename)
+        dens_sf.append(g_tempcut['rhoform']*40.8)
+        temp_sf.append(g_tempcut['tempform'])
+        mass_sf.append(g_tempcut['massform']*10**9)
+    elif (mod == '../low_master_iso' or mod == '../threshold'):
+        new = filt.LowPass('age', '1 Gyr')
+        s2 = s.s[new]
+        s2.s['n_sf'] = s2.s['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
+        dens_sf.append(s2.s['n_sf'])
+        temp_sf.append(s2.s['tempform'])
+        mass_sf.append(s2.s['massform'])
+    else:
         dens_sf.append([])
         temp_sf.append([])
         mass_sf.append([])
+    
+for m in model:
+    load_sim_faceon(m)
         
-    if n==2:
-        new = filt.LowPass('age', '1 Gyr')
-        filename = '../low_federrath_tempcut_iso/low.starlog'
-        g_tempcut = starlog(filename)
-        #g_tempcut['n_sf'] = (g_tempcut['rhoform']*10**9*2*10**30*units.kg/(2.93*10**64*units.cm**3))/(1.673*10**(-27))
-        dens_sf.append(g_tempcut['rhoform']*40.8) # times 10**9*2*10**30/(2.93*10**64)/(1.673*10**(-27)))) = 40.8 in units of cm^-3
-        temp_sf.append(g_tempcut['tempform'])
-        mass_sf.append(g_tempcut['massform']*10**9) # in units of M_sun
-        print('Maximum Density n = ', np.max(g_tempcut['rhoform']*40.8))
-        #print('Minimum Density n = ', np.min(dens_sf[0]))
-        print('Maximum Temperature = ', np.max(g_tempcut['tempform']))
-        print('Minimum Temperature = ', np.min(g_tempcut['tempform']))
-        print('Maximum Density rho = ', np.max(g_tempcut['rhoform']))
-        print('Minimum Density rho = ', np.min(g_tempcut['rhoform']))
-        print('Maximum Mass = ', np.max(g_tempcut['massform'])*10**9)
-        print('Minimum Mass = ', np.min(g_tempcut['massform'])*10**9)
-        
-    if n==3:
-        new = filt.LowPass('age', '1 Gyr')
-        filename = '../low_federrath_new_iso/low.starlog'
-        g_new = starlog(filename)
-        #g_new['n_sf'] = (g_new['rhoform']*10**9*2*10**30*units.kg/(2.93*10**64*units.cm**3))/(1.673*10**(-27))
-        dens_sf.append(g_new['rhoform']*40.8) # times 10**9*2*10**30/(2.93*10**64)/(1.673*10**(-27)))) = 40.8 in units of cm^-3
-        temp_sf.append(g_new['tempform'])
-        mass_sf.append(g_new['massform']*10**9) # in units of M_sun
-        print('Maximum Density n = ', np.max(g_new['rhoform']*40.8))
-        #print('Minimum Density n = ', np.min(dens_sf[0]))
-        print('Maximum Temperature = ', np.max(g_new['tempform']))
-        print('Minimum Temperature = ', np.min(g_new['tempform']))
-        print('Maximum Density rho = ', np.max(g_new['rhoform']))
-        print('Minimum Density rho = ', np.min(g_new['rhoform']))
-        print('Maximum Mass = ', np.max(g_new['massform'])*10**9)
-        print('Minimum Mass = ', np.min(g_new['massform'])*10**9)
-            
-        
+print(dens_sf[0])
+print(mass_sf[0])  
+print(dens_sf[1])
+print(mass_sf[1])
+print(dens_sf[2])
+print(mass_sf[2]) 
+print(dens_sf[3])
+print(temp_sf[3])
+print(mass_sf[3]) 
+
 fig = plt.figure(figsize = (9.92,10))
 gs0 = gd.GridSpec(2, 2, figure=fig, width_ratios=[1,1], height_ratios=[1,1])
 gs0.update(hspace=0.00, wspace=0.00)
@@ -118,13 +102,13 @@ for n in range(4):
     hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=400, range = ((-6, 5), (1.5,7.9)))
     im = ax.imshow(np.rot90(hist), cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(4.5), vmax = 10**(7.5)))
 
-    if (n!=1):
+    if (n<5):
         #print(np.log10(float(dens_sf[-1])))
         histform, xbins, ybins = np.histogram2d(np.log10(dens_sf[n]), np.log10(temp_sf[n]), weights=mass_sf[n], bins=400, range = ((-6, 5), (1.5,7.9)))
         #im = ax.imshow(np.rot90(histform), cmap = 'magma_r', extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], norm = matplotlib.colors.LogNorm())
-        level = [1e4, 1e6]
+        level = [1e5, 1e6]
         colors = ['orchid', 'green']
-        strs = [r'$10^4 M_{\rm sun}$', r'$10^6 M_{\rm sun}$']
+        strs = [r'$10^5 M_{\rm sun}$', r'$10^6 M_{\rm sun}$']
         cont = ax.contour(np.flipud(np.rot90(histform)),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], linewidths=0.5, cmap = plt.cm.PiYG, levels = level)
         list = []
         for i, level in enumerate(level):
@@ -151,4 +135,4 @@ for n in range(4):
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Mass [M$_{\odot}$]', size=12)
         ax.legend(loc = 'lower right')
 fig.tight_layout()
-plt.savefig('dens_temp_low.pdf')
+plt.savefig('dens_temp_low_ICs_comparison.pdf')

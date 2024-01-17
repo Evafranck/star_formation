@@ -41,7 +41,7 @@ bins = 300
 
 
 def load_sim_faceon(mod):
-    if (mod == 'federrath_tempcut' or mod == 'federrath_new'):
+    if (mod == 'federrath_tempcut' or mod == 'federrath_new' or mod == 'hopkins_tempcut' or mod == 'hopkins'):
         filename = '../med_'+mod+'_iso/med.starlog'
         g = starlog(filename)
         efficiency.append(g['epsilonform'])
@@ -53,9 +53,14 @@ def load_sim_faceon(mod):
         efficiency.append(s.g['effform'])
         alpha.append(s.g['alphaform'])
     
-model = ['evans', 'padoan', 'evans', 'federrath_new']
+model = ['hopkins_tempcut', 'hopkins', 'evans', 'federrath_new']
 for m in model:
     load_sim_faceon(m)
+
+print(np.max(alpha[0]))
+print(np.min(alpha[1]))
+print(np.max(efficiency[0]))
+print(np.min(efficiency[1]))
 
 # Titel immer zu bearbeiten
 titlelist = [r'a) Threshold-based model', r'b) Padoan et al. (2012)',  r'c) Evans et al. (2022)', r'd) Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '',]
@@ -71,7 +76,7 @@ for n in range(8):
     if n < 4:
         hist, bins, edges = ax.hist(alpha[n], bins = 100, histtype = 'step', density = True)
         ax.set_xlabel(r'$\alpha$', fontsize = 15)
-        ax.set_xlim(0, 300)
+        #ax.set_xlim(0, 300)
     else:
         hist, bins, edges = ax.hist(efficiency[n-4], bins = 100, histtype = 'step', density = True)
         ax.set_xlabel(r'$\epsilon_{\mathrm{ff}}$', fontsize = 15)

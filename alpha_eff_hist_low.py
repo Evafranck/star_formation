@@ -41,7 +41,7 @@ bins = 300
 
 
 def load_sim_faceon(mod):
-    if (mod == 'federrath_tempcut' or mod == 'federrath_new'):
+    if (mod == 'federrath_tempcut' or mod == 'federrath_new' or mod == 'hopkins_tempcut' or mod == 'hopkins'):
         filename = '../low_'+mod+'_iso/low.starlog'
         g = starlog(filename)
         efficiency.append(g['epsilonform'])
@@ -50,15 +50,21 @@ def load_sim_faceon(mod):
         s = pynbody.load('../low'+'_'+mod+'_iso/' + 'low.01000')
         pynbody.analysis.angmom.faceon(s)
         s.physical_units()
+        print(mod)
         efficiency.append(s.g['effform'])
         alpha.append(s.g['alphaform'])
     
-model = ['evans', 'padoan', 'federrath_tempcut', 'federrath_new']
+model = ['padoan', 'evans', 'hopkins', 'federrath_new']
 for m in model:
     load_sim_faceon(m)
 
+print(np.max(alpha[0]))
+print(np.min(alpha[1]))
+print(np.max(efficiency[0]))
+print(np.min(efficiency[1]))
+
 # Titel immer zu bearbeiten
-titlelist = [r'a) Threshold-based model', r'b) Padoan et al. (2012)',  r'c) Federrath & Klessen (2012)' + '\n' + 'with temperature cut', r'd) Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '',]
+titlelist = [r'a) Padoan et al. (2012)', r'b) Evans et al. (2022)',  r'c) Hopkins et al. (2013)' + '\n' + 'without temperature cut', r'd) Federrath & Klessen (2012)' + '\n' + 'without temperature cut', '', '', '', '',]
 
 range_list = [(4.26, 5.45), (-2, 1), (1, 6)]
 y_list = [(0, 8.5), (0, 3.4),(0, 1.1)]
@@ -71,7 +77,7 @@ for n in range(8):
     if n < 4:
         hist, bins, edges = ax.hist(alpha[n], bins = 100, histtype = 'step', density = True)
         ax.set_xlabel(r'$\alpha$', fontsize = 15)
-        ax.set_xlim(0, 150)
+        #ax.set_xlim(0, 1)
     else:
         hist, bins, edges = ax.hist(efficiency[n-4], bins = 100, histtype = 'step', density = True)
         ax.set_xlabel(r'$\epsilon_{\mathrm{ff}}$', fontsize = 15)

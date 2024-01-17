@@ -12,6 +12,16 @@ import pynbody.filt as filt
 import os, struct
 from pynbody import util
 
+density = []
+temp = []
+mass = []
+dens_sf = []
+temp_sf = []
+mass_sf = []
+model = ['master', 'hopkins_tempcut', 'hopkins', 'federrath_new']
+titlelist = ['Threshold-based model', r'Hopkins et al. (2013)' + '\n' + 'with temperature cut', r'Hopkins et al. (2013)' + '\n' + 'without temperature cut', 'Federrath & Klessen (2012)' + '\n' + 'without temperature cut']
+
+
 def starlog(filename):
     f = util.open_(filename, "rb")
     size = struct.unpack(">i", f.read(4))
@@ -30,70 +40,37 @@ def starlog(filename):
                                                           'f8', 'f8')})
     return np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
 
-density = []
-temp = []
-mass = []
-dens_sf = []
-temp_sf = []
-mass_sf = []
-model = ['master', 'padoan', 'evans', 'federrath_new']
-titlelist = ['Threshold-based model', 'Padoan et al. (2012)', 'Evans et al. (2022)', 'Federrath & Klessen (2012)' + '\n' + 'without temperature cut']
-
-for n in range(4):
-    s_all = pynbody.load('../med'+'_'+model[n]+'_iso/' + 'med.01000')
+def load_sim_faceon(mod):
+    s_all = pynbody.load('../med'+'_'+mod+'_iso/' + 'med.01000')
     pynbody.analysis.angmom.faceon(s_all)
-    if n==0:
-        print('Density rho Units before = ', s_all.s['rhoform'].units)
-        print('Mass Units before = ', s_all.s['massform'].units)
-        print('Temperature Units before = ', s_all.s['tempform'].units)
     s_all.physical_units()
     disk = filt.LowPass('r', '30 kpc') & filt.BandPass('z', '-5 kpc', '5 kpc')
     s = s_all[disk]
-    #s = s_all
     s.g['n'] = s.g['rho'].in_units('kg cm^-3')/(1.673*10**(-27))
     density.append(s.g['n'])
     temp.append(s.g['temp'])
     mass.append(s.g['mass'])
-    
-    if n==0:
-        s2=s.s
-        s2['n_sf'] = s2['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
-        dens_sf.append(s2['n_sf'])
-        temp_sf.append(s2['tempform'])
-        mass_sf.append(s2['massform'])
-        print('Maximum Density n = ', np.max(s2['n_sf']))
-        print('Minimum Density n = ', np.min(s2['n_sf']))
-        print('Maximum Density rho = ', np.max(s2['rhoform']))
-        print('Minimum Density rho = ', np.min(s2['rhoform']))
-        print('Maximum Temperature = ', np.max(s2['tempform']))
-        print('Minimum Temperature = ', np.min(s2['tempform']))
-        print('Maximum Mass = ', np.max(s2['massform']))
-        print('Minimum Mass = ', np.min(s2['massform']))
-        print('Density rho Units after = ', s2['rhoform'].units)
-        print('Mass Units after = ', s2['massform'].units)
-        print('Temperature Units after = ', s2['tempform'].units)
-    
-    if (n==1 or n==2):
+    if (mod == 'federrath_tempcut' or mod == 'federrath_new' or mod == 'hopkins_tempcut' or mod == 'hopkins'):
+        new = filt.LowPass('age', '1 Gyr')
+        filename = '../med_' + mod + '_iso/med.starlog'
+        g_tempcut = starlog(filename)
+        dens_sf.append(g_tempcut['rhoform']*40.8)
+        temp_sf.append(g_tempcut['tempform'])
+        mass_sf.append(g_tempcut['massform']*10**9)
+    elif mod == 'master':
+        new = filt.LowPass('age', '1 Gyr')
+        s2 = s.s[new]
+        s2.s['n_sf'] = s2.s['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
+        dens_sf.append(s2.s['n_sf'])
+        temp_sf.append(s2.s['tempform'])
+        mass_sf.append(s2.s['massform'])
+    else:
         dens_sf.append([])
         temp_sf.append([])
         mass_sf.append([])
-        
-    if n==3:
-        new = filt.LowPass('age', '1 Gyr')
-        filename = '../med_federrath_new_iso/med.starlog'
-        g_new = starlog(filename)
-        #g_new['n_sf'] = (g_new['rhoform']*10**9*2*10**30*units.kg/(2.93*10**64*units.cm**3))/(1.673*10**(-27))
-        dens_sf.append(g_new['rhoform']*40.8) # times 10**9*2*10**30/(2.93*10**64)/(1.673*10**(-27)))) = 40.8 in units of cm^-3
-        temp_sf.append(g_new['tempform'])
-        mass_sf.append(g_new['massform']*10**9) # in units of M_sun
-        print('Maximum Density n = ', np.max(g_new['rhoform']*40.8))
-        #print('Minimum Density n = ', np.min(dens_sf[0]))
-        print('Maximum Temperature = ', np.max(g_new['tempform']))
-        print('Minimum Temperature = ', np.min(g_new['tempform']))
-        print('Maximum Density rho = ', np.max(g_new['rhoform']))
-        print('Minimum Density rho = ', np.min(g_new['rhoform']))
-        print('Maximum Mass = ', np.max(g_new['massform'])*10**9)
-        print('Minimum Mass = ', np.min(g_new['massform'])*10**9)
+    
+for m in model:
+    load_sim_faceon(m)
             
         
 fig = plt.figure(figsize = (9.92,10))
@@ -105,13 +82,13 @@ for n in range(4):
     hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=400, range = ((-6, 5), (1.5,7.9)))
     im = ax.imshow(np.rot90(hist), cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(4.5), vmax = 10**(7.5)))
 
-    if (n==0 or n==3):
+    if (n<5):
         #print(np.log10(float(dens_sf[-1])))
         histform, xbins, ybins = np.histogram2d(np.log10(dens_sf[n]), np.log10(temp_sf[n]), weights=mass_sf[n], bins=400, range = ((-6, 5), (1.5,7.9)))
         #im = ax.imshow(np.rot90(histform), cmap = 'magma_r', extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], norm = matplotlib.colors.LogNorm())
-        level = [1e4, 1e6]
+        level = [1e5, 1e6]
         colors = ['orchid', 'green']
-        strs = [r'$10^4 M_{\rm sun}$', r'$10^6 M_{\rm sun}$']
+        strs = [r'$10^5 M_{\rm sun}$', r'$10^6 M_{\rm sun}$']
         cont = ax.contour(np.flipud(np.rot90(histform)),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], linewidths=0.5, cmap = plt.cm.PiYG, levels = level)
         list = []
         for i, level in enumerate(level):
@@ -138,4 +115,4 @@ for n in range(4):
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Mass [M$_{\odot}$]', size=12)
         ax.legend(loc = 'lower right')
 fig.tight_layout()
-plt.savefig('dens_temp_med.pdf')
+plt.savefig('dens_temp_med_Hopkins.pdf')
