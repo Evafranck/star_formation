@@ -110,11 +110,11 @@ def sfh(sim, filename=None, massform=True, clear=False, legend=False,
 	return array.SimArray(sfhist, "Msol yr**-1"), array.SimArray(thebins, "Gyr")
 
 
-model = ['master', 'padoan', 'semenov', 'evans', 'federrath_tempcut', 'federrath_new', 'hopkins_tempcut', 'hopkins']
+model = ['master', 'padoan', 'semenov', 'evans','federrath', 'hopkins_tempcut', 'hopkins']
 labellist = ['Threshold-based model', 'Padoan et al. (2012)', 'Semenov et al. (2016)', 'Evans et al. (2022)', 
-             'Federrath & Klessen (2012)' + '\n' + 'with temperature cut', 'Federrath & Klessen (2012)' + '\n' + 'without temperature cut', 
+             'Federrath & Klessen (2012)' + '\n' + 'without temperature cut', 
              'Hopkins et al. (2013)' + '\n' + 'with temperature cut', 'Hopkins et al. (2013)' + '\n' + 'without temperature cut']
-colorlist = ['blue','orange', 'green', 'red', 'purple', 'black', 'brown', 'pink']
+colorlist = ['blue','orange', 'green', 'red', 'black', 'brown', 'pink']
 
 
 plt.figure(figsize = (10,10))
@@ -124,11 +124,11 @@ plt.ylabel('log(SFR) [M$_\odot$ yr$^{-1}$]', fontsize = 14)
 plt.xlim(0, 1.5)
 #plt.ylim(0, 15)
 plt.yscale('log')
-for n in range(8):
-    s = pynbody.load('../low' + '_'+ model[n] + '_iso/' + 'low.01000')
+for n in range(7):
+    s = pynbody.load('../med' + '_'+ model[n] + '_iso/' + 'med.01000')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units()
     sfh(s, label = labellist[n], lw = 1, color = colorlist[n])
 plt.legend(fontsize = 14)
-plt.savefig('SFH_time_low.pdf', bbox_inches = 'tight')
+plt.savefig('SFH_time_med.pdf', bbox_inches = 'tight')
 
