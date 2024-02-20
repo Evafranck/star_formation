@@ -110,9 +110,12 @@ def sfh(sim, filename=None, massform=True, clear=False, legend=False,
 	return array.SimArray(sfhist, "Msol yr**-1"), array.SimArray(thebins, "Gyr")
 
 
-model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
-labellist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
-colorlist = ['blue','orange', 'green', 'red', 'purple']
+#labellist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
+#colorlist = ['blue','orange', 'green', 'red', 'purple']
+#model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+#model = ['semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
+model = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+labellist = model
 
 
 plt.figure(figsize = (10,10))
@@ -122,11 +125,11 @@ plt.ylabel('log(SFR) [M$_\odot$ yr$^{-1}$]', fontsize = 14)
 #plt.xlim(0, 2.5)
 #plt.ylim(0, 15)
 plt.yscale('log')
-for n in range(5):
+for n in range(len(model)):
     s = pynbody.load('../'+model[n]+'/halo.00128')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units()
-    sfh(s, label = labellist[n], lw = 1, color = colorlist[n])
+    sfh(s, label = labellist[n], lw = 1) #, color = colorlist[n])
 plt.legend(fontsize = 14)
-plt.savefig('SFH_time.pdf', bbox_inches = 'tight')
+plt.savefig('SFH_time3.pdf', bbox_inches = 'tight')
 

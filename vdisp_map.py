@@ -34,7 +34,7 @@ plt.rcParams['patch.linewidth'] = 0.5
 key = []
 x = []
 y = []
-bins = 150
+bins = 200
 
 def load_sim_faceon(mod):
     s_all = pynbody.load('../'+mod+'/halo.00128')
@@ -60,9 +60,13 @@ def load_sim_sideon(mod):
     x.append(s.g['x'])
     y.append(s.g['y'])
 
-model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
+#model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
+#model = ['semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008'] 
+model = ['federrath_cstar_cut', 'threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008']
+#titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'platzhalter']
+titlelist = model
 
-titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
+#titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
 
 for m in model:
     load_sim_faceon(m)
@@ -118,5 +122,5 @@ for n in range(10):
 
 
 fig.suptitle('Gas velocity dispersion')
-plt.savefig('vdisp_map.pdf', bbox_inches='tight')
+plt.savefig('vdisp_map3.pdf', bbox_inches='tight')
 plt.clf()

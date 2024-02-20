@@ -26,12 +26,15 @@ SFR = x*10**6/t_ff # in Msol/yr/kpc^2
 
 
 # Create a list of simulation paths
-simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
+#simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+#simulations = ['semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
+simulations = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
 
-
+sim_labels = simulations
+symbols = ["+", "x", "o", "s", "D", "v"]
 # Create a list of simulation labels and colors
-sim_labels = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
-colorlist = ['blue','orange', 'green', 'red', 'purple']
+#sim_labels = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
+#colorlist = ['blue','orange', 'green', 'red', 'purple']
 
 # Calculate the Kennicutt-Schmidt law for a given simulation (modified from pynbody documentation)
 def schmidtlaw(sim, filename=None, pretime='50 Myr',
@@ -73,7 +76,7 @@ def schmidtlaw(sim, filename=None, pretime='50 Myr',
 								 pg['density'].in_units('Msol pc^-2').max()),
 							 100)
         ysigma = 2.5e-4 * xsigma ** 1.4  # Kennicutt (1998)
-        xbigiel = np.logspace(0, 1, 10)
+        xbigiel = np.logspace(0, 1.5, 20)
         ybigiel = 10. ** (-2.1) * xbigiel ** 1.0   # Bigiel et al (2007)
         
     return gas_dens, star_dens, xsigma, ysigma, xbigiel, ybigiel
@@ -100,13 +103,14 @@ for sim_path in simulations:
 fig = plt.figure(figsize=(10, 10))
 
 for n in range(len(simulations)):
-    plt.loglog(KS_gas_dens[n], KS_star_dens[n], "+", label = sim_labels[n], color = colorlist[n])
+    plt.loglog(KS_gas_dens[n], KS_star_dens[n], symbols[n], label = sim_labels[n]) #, color = colorlist[n])
 plt.loglog(KS_xbigiel[0], KS_ybigiel[0], label='Bigiel (2007)')
 plt.xlabel('$\Sigma_{gas}$ [M$_\odot$ pc$^{-2}$]')
 plt.ylabel('$\Sigma_{SFR}$ [M$_\odot$ yr$^{-1}$ kpc$^{-2}$]')
+plt.xlim(1e-1, 1e2)
 plt.legend(loc = 'upper left', fontsize = 14)
 plt.title('Bigiel', fontsize = 16)
 plt.tight_layout()
 plt.show()
-plt.savefig('bigiel_high.pdf', bbox_inches='tight')
+plt.savefig('bigiel_high3.pdf', bbox_inches='tight')
 

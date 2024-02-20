@@ -67,9 +67,10 @@ fig = plt.figure(figsize=(10,10))
 gs0 = gridspec.GridSpec(1, 1)
 gs0.update(hspace=0.00, wspace=0.00)
 
-simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
-
-label = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
+#simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
+simulations = ['federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan',  'hopkins_alpha_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008']#, 'threshold_alpha008', 'threshold_1e6_alpha008']
+label = simulations
+#label = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
 color = ['blue', 'orange', 'green', 'red', 'purple']
 for n in range(1):
     ax = fig.add_subplot(gs0[n])

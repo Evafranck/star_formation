@@ -19,12 +19,15 @@ from astropy.modeling import Fittable1DModel, Parameter
 
 from scipy.optimize import curve_fit
 
-model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
+model = ['federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan',  'hopkins_alpha_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008']#, 'threshold_alpha008', 'threshold_1e6_alpha008']
+label = model
+
+#model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
 
 fig = plt.figure(figsize=(10,10))
 
-label = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r' $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'Platzhalter']
-color = ['blue', 'orange', 'green', 'red', 'purple', 'black']
+#label = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r' $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'Platzhalter']
+#color = ['blue', 'orange', 'green', 'red', 'purple', 'black']
 plt.title('Gas mass over time', fontsize = 13)
 plt.xlabel('time [Gyr]', fontsize = 12)
 plt.ylabel(r'Gas mass [log($M_{\rm sol}$)]', fontsize = 12)
@@ -36,7 +39,7 @@ for k, sim in enumerate(model):
     time = []
 
     simname = glob.glob('../'+sim+'/halo.0????')
-    print(simname[0])
+    print(simname[0], simname[-1])
     #if not os.path.isfile(sim+'_surf_den_test.dat'):
     for name in simname:
         s_all = pb.load(name)
@@ -47,7 +50,9 @@ for k, sim in enumerate(model):
         cold = f.LowPass('temp', '15000 K') # nur kaltes gas
         s = s_disk.g[cold]
         gas_mass.append(np.sum(s.g['mass']))
-        time.append(s.properties['time'].in_units('Gyr'))
+        h1 = s_disk.s
+        time.append(h1['tform'].in_units('Gyr'))
+    print(time)
         
     # Sortiere die Indizes der x-Werte
     sorted_indices = sorted(range(len(time)), key=lambda i: time[i])
@@ -55,7 +60,7 @@ for k, sim in enumerate(model):
     # Verwende die sortierten Indizes, um x und y neu zu ordnen
     time_sorted = [time[i] for i in sorted_indices]
     gas_mass_sorted = [gas_mass[i] for i in sorted_indices]
-    plt.plot(time_sorted,np.log10(gas_mass_sorted),color=color[k],lw=1, linestyle = '-', label = label[k])
+    plt.plot(time_sorted,np.log10(gas_mass_sorted),lw=1, linestyle = '-', label = label[k]) #,color=color[k]
     #plt.ylim(-0.1,4.45)
     #plt.xlim(0.1,1)
 

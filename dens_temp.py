@@ -18,8 +18,12 @@ mass = []
 dens_sf = []
 temp_sf = []
 mass_sf = []
-model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
-titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r' $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'Platzhalter']
+#titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r' $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'Platzhalter']
+
+model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+#model = ['semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
+#model = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+titlelist = model
 
 def starlog(filename):
     f = util.open_(filename, "rb")
@@ -49,7 +53,7 @@ def load_sim_faceon(mod):
     density.append(s.g['n'])
     temp.append(s.g['temp'])
     mass.append(s.g['mass']) 
-    if (mod == 'threshold'):
+    if (mod == 'threshold' or mod == 'threshold_alpha008' or mod == 'threshold_1e6_alpha008'):
         new = filt.LowPass('age', '1 Gyr')
         s2 = s.s[new]
         s2.s['n_sf'] = s2.s['rhoform'].in_units('kg cm^-3')/(1.673*10**(-27))
@@ -75,17 +79,17 @@ fig = plt.figure(figsize = (15,3))
 gs0 = gd.GridSpec(1, 6, figure=fig)
 gs0.update(hspace=0.00, wspace=0.00)
 
-for n in range(5):
+for n in range(6):
     ax = fig.add_subplot(gs0[n])
     hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=300, range = ((-6, 8), (1.5,7.9)))
     im = ax.imshow(np.rot90(hist), cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(3.5), vmax = 10**(8)))
 
     histform, xbins, ybins = np.histogram2d(np.log10(dens_sf[n]), np.log10(temp_sf[n]), weights=mass_sf[n], bins=400, range = ((-6, 8), (1.5,7.9)))
     #im = ax.imshow(np.rot90(histform), cmap = 'magma_r', extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], norm = matplotlib.colors.LogNorm())
-    level = [1e1, 1e6]
-    colors = ['orchid', 'green']
-    strs = [r'$10^2 M_{\rm sun}$', r'$10^6 M_{\rm sun}$']
-    cont = ax.contour(np.flipud(np.rot90(histform)),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], linewidths=0.5, cmap = plt.cm.PiYG, levels = level)
+    level = [1e6]
+    colors = ['green']
+    strs = [ r'$10^6 M_{\rm sun}$']
+    cont = ax.contour(np.flipud(np.rot90(histform)),extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], linewidths=0.5, cmap = 'PiYG_r', levels = level)
     list = []
     for i, level in enumerate(level):
         list.append(plt.Line2D([0], [0], ls = '-', lw = 1, color = colors[i]))
