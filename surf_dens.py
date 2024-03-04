@@ -89,7 +89,7 @@ gs0 = gd.GridSpec(1, 4, figure=fig, width_ratios = [1, 1, 1, 1])
 for n in range(4):
     ax = fig.add_subplot(gs0[n])  
     if (n==0):
-        for i in range(5):
+        for i in range(8):
             plt.plot(rbins[i], star_surf_dens[i],  label = titlelist[i], lw=1) #, c = colorlist[i], ls = linestyle[i])
         ax.set_xlabel('R [kpc]', fontsize = 14)
         #ax.set_xlim(0, 19)
@@ -100,7 +100,7 @@ for n in range(4):
         ax.set_title('a) Radial surface density profile of stars', fontsize = 14)
         
     if (n==1):
-        for i in range(4):
+        for i in range(8):
             plt.plot(rbins_gas[i], gas_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
         ax.set_xlabel('R [kpc]', fontsize = 14)
         #ax.set_xlim(0, 4)
@@ -110,9 +110,9 @@ for n in range(4):
         ax.set_title('b) Radial surface density profile of gas', fontsize = 14)
         
     if (n==2):
-        for i in range(4):
-            plt.plot(rbins_gas[i], gas_vert_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
-        ax.set_xlabel('R [kpc]', fontsize = 14)
+        for i in range(8):
+            plt.plot(zbins_gas[i], gas_vert_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
+        ax.set_xlabel('z [kpc]', fontsize = 14)
         #ax.set_xlim(0, 4)
         #ax.set_ylim(-3, 3)
         ax.set_ylabel(r'log($\Sigma_{gas}$) [M$_{\odot}$ kpc$^{-2}$]', fontsize = 14)
@@ -120,9 +120,9 @@ for n in range(4):
         ax.set_title('c) Vertical surface density profile of gas', fontsize = 14)
     
     if (n==3):
-        for i in range(4):
-            plt.plot(rbins_gas[i], star_vert_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
-        ax.set_xlabel('R [kpc]', fontsize = 14)
+        for i in range(6):
+            plt.plot(zbins_gas[i], star_vert_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
+        ax.set_xlabel('z [kpc]', fontsize = 14)
         #ax.set_xlim(0, 4)
         #ax.set_ylim(-3, 3)
         ax.set_ylabel(r'log($\Sigma_{gas}$) [M$_{\odot}$ kpc$^{-2}$]', fontsize = 14)
