@@ -41,8 +41,8 @@ density = []
 x = []
 y = []
 #model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-model = ['threshold_alpha008', 'threshold_1e6_alpha008', 'semenov_1e6_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_cstar_cut']  # 'semenov_alpha008', 'federrath_alpha008'
-#model = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+#model = ['threshold_alpha008', 'threshold_1e6_alpha008', 'semenov_1e6_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_cstar_cut']  # 'semenov_alpha008', 'federrath_alpha008'
+model = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
 #titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'platzhalter']
 titlelist = model
 
@@ -77,8 +77,8 @@ for m in model:
 for m in model:    
     load_sim_sideon(m)
     
-fig = plt.figure(figsize = (14, 2.9))
-gs0 = gd.GridSpec(2, 6, figure=fig, height_ratios = [1, 0.258], width_ratios = [1, 1, 1, 1, 1, 1.07])
+fig = plt.figure(figsize = (14, 2.95))
+gs0 = gd.GridSpec(2, 6, figure=fig, height_ratios = [1, 0.27], width_ratios = [1, 1, 1, 1, 1, 1.077])
 gs0.update(hspace=0.00, wspace=0.00)
 
 
@@ -103,8 +103,8 @@ for n in range(6):
     
     ax.text(0.5, 0.88, titlelist[n], fontsize = 8, horizontalalignment='center', transform=ax.transAxes)
     ax.set_xlabel('x [kpc]', fontsize = 14)
-    ax.set_xlim(-19.99, 19.99)
-    ax.set_ylim(-19.99, 19.99)
+    ax.set_xlim(-14.99, 14.99)
+    ax.set_ylim(-14.99, 14.99)
     ax.set_aspect(1./ax.get_data_ratio())
 
 for n in range(6, 12):
@@ -127,9 +127,9 @@ for n in range(6, 12):
 
     #ax.set_title(titlelist[n], fontsize = 11)
     ax.set_xlabel('x [kpc]', fontsize = 10)
-    ax.set_xlim(-19.99, 19.99)
-    ax.set_ylim(-5, 5)
+    ax.set_xlim(-14.99, 14.99)
+    ax.set_ylim(-3.99, 3.99)
 
-plt.savefig('stellar_dens2.pdf', bbox_inches='tight')
+plt.savefig('stellar_dens3.pdf', bbox_inches='tight')
 plt.clf()
 

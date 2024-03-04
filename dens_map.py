@@ -79,8 +79,8 @@ for m in model:
 # Titel immer zu bearbeiten
 #titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r' $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'Platzhalter']
 
-fig = plt.figure(figsize = (14, 3))
-gs0 = gd.GridSpec(2, 6, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1, 1, 1.07])
+fig = plt.figure(figsize = (14, 2.95))
+gs0 = gd.GridSpec(2, 6, figure=fig, height_ratios = [1, 0.27], width_ratios = [1, 1, 1, 1, 1, 1.077])
 gs0.update(hspace=0.00, wspace=0.00)
 
 for n in range(2*len(model)):
