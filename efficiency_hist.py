@@ -67,11 +67,11 @@ gs0 = gd.GridSpec(1, 6, figure=fig)
 for n in range(6):
     ax = fig.add_subplot(gs0[n])
     hist, bins, edges = ax.hist(eff[n], bins = bins, histtype = 'step', density = True)
-    ax.set_title(titlelist[n], wrap = True, fontsize = 15)
+    ax.set_title(titlelist[n], wrap = True)
     #if n>0 and n!=5:
         #ax.set_yticklabels([])
     #ax.set_xscale('log')
-    ax.set_xlabel(r'$\epsilon_{\mathrm{ff}}$', fontsize = 15)
+    ax.set_xlabel(r'$\epsilon_{\mathrm{ff}}$')
     ax.set_xlim(0.01, 10000)
     #ax.tick_params(axis='x', la14belsize=)
     #ax.tick_params(axis='y', labelsize=14)
