@@ -49,7 +49,9 @@ def load_sim_faceon(mod):
     
 
 #model = ['federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
-model = ['federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'hopkins_alpha_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut']
+#model = ['federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'hopkins_alpha_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut']
+model = ['federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut']
+
 titlelist = model
 for m in model:
     load_sim_faceon(m)
@@ -57,24 +59,24 @@ for m in model:
 
 range_list = [(4.26, 5.45), (-2, 1), (1, 6)]
 y_list = [(0, 8.5), (0, 3.4),(0, 1.1)]
-fig = plt.figure(figsize = (19, 8))
-gs0 = gd.GridSpec(2, 5, height_ratios=[1,1.3], width_ratios=[1,1,1,1,1])
+
+fig = plt.figure(figsize = (17,3))
+gs0 = gd.GridSpec(1, 6, figure=fig)
 #gs0.update(hspace=0.00, wspace=0.00)
 
-for n in range(4):
+for n in range(6):
     ax = fig.add_subplot(gs0[n])
     hist, bins, edges = ax.hist(eff[n], bins = bins, histtype = 'step', density = True)
     ax.set_title(titlelist[n], wrap = True, fontsize = 15)
     #if n>0 and n!=5:
         #ax.set_yticklabels([])
     #ax.set_xscale('log')
-    if n > 5:
-        ax.set_xlabel(r'$\epsilon_{\mathrm{ff}}$', fontsize = 15)
+    ax.set_xlabel(r'$\epsilon_{\mathrm{ff}}$', fontsize = 15)
     ax.set_xlim(0.01, 10000)
-    ax.tick_params(axis='x', labelsize=14)
-    ax.tick_params(axis='y', labelsize=14)
+    #ax.tick_params(axis='x', la14belsize=)
+    #ax.tick_params(axis='y', labelsize=14)
     #ax.set_ylim(0, 50)
     ax.set_aspect(1./ax.get_data_ratio())
     ax.grid(ls = '--', lw = 0.1, color = 'grey')
 fig.tight_layout() 
-fig.savefig('rhoform_histogram.pdf', bbox_inches='tight')
+fig.savefig('eff_histogram.pdf', bbox_inches='tight')
