@@ -83,7 +83,7 @@ for m in simulations:
     load_sim_faceon(m)
     
 
-fig = plt.figure(figsize = (20,5))
+fig = plt.figure(figsize = (23,5))
 gs0 = gd.GridSpec(1, 4, figure=fig, width_ratios = [1, 1, 1, 1])
 
 for n in range(4):
