@@ -123,7 +123,7 @@ plt.title('Star formation history', fontsize = 16)
 plt.xlabel('Time [Gyr]', fontsize = 14)
 plt.ylabel('log(SFR) [M$_\odot$ yr$^{-1}$]', fontsize = 14)
 #plt.xlim(0, 2.5)
-#plt.ylim(0, 15)
+plt.ylim(2, 4e1)
 plt.yscale('log')
 for n in range(len(model)):
     s = pynbody.load('../'+model[n]+'/halo.00128')
