@@ -33,11 +33,11 @@ SFR = x*10**6/t_ff # in Msol/yr/kpc^2
 #sim_labels = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
 #colorlist = ['blue','orange', 'green', 'red', 'purple']
 #'threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan',
-simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-#simulations = ['semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
+#simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+simulations = ['threshold_alpha008', 'threshold_1e6_alpha008','semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
 #simulations = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
 sim_labels = simulations
-symbols = ["+", "x", "o", "s", "D", "v"]
+symbols = ["+", "x", "o", "s", "D", "v", "D", "v"]
 
 # Calculate the Kennicutt-Schmidt law for a given simulation (modified from pynbody documentation)
 def schmidtlaw(sim, filename=None, pretime='50 Myr',
@@ -125,5 +125,5 @@ plt.legend(fontsize = 14)
 plt.title('Kennicutt-Schmidt-relation', fontsize = 16)
 plt.tight_layout()
 plt.show()
-plt.savefig('KS_law.pdf', bbox_inches='tight')
+plt.savefig('KS_law2.pdf', bbox_inches='tight')
 

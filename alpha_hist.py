@@ -69,7 +69,7 @@ for n in range(10):
         #ax.set_yticklabels([])
     if n > 5:
         ax.set_xlabel(r'$\alpha$', fontsize = 15)
-    ax.set_xlim(0.01, 40)
+    ax.set_xlim(0.01, 30)
     ax.tick_params(axis='x', labelsize=14)
     ax.tick_params(axis='y', labelsize=14)
     #ax.set_ylim(0, 50)

@@ -51,7 +51,7 @@ gas_vert_surf_dens = []
 
 #titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
 #simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-#simulations = ['semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
+#simulations = ['threshold_alpha008','semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
 simulations = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
 titlelist = simulations
 
@@ -83,10 +83,10 @@ for m in simulations:
     load_sim_faceon(m)
     
 
-fig = plt.figure(figsize = (11,5))
-gs0 = gd.GridSpec(1, 2, figure=fig, width_ratios = [1, 1])
+fig = plt.figure(figsize = (20,5))
+gs0 = gd.GridSpec(1, 4, figure=fig, width_ratios = [1, 1, 1, 1])
 
-for n in range(2):
+for n in range(4):
     ax = fig.add_subplot(gs0[n])  
     if (n==0):
         for i in range(5):
@@ -108,6 +108,26 @@ for n in range(2):
         ax.set_ylabel(r'log($\Sigma_{gas}$) [M$_{\odot}$ kpc$^{-2}$]', fontsize = 14)
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_title('b) Radial surface density profile of gas', fontsize = 14)
+        
+    if (n==2):
+        for i in range(4):
+            plt.plot(rbins_gas[i], gas_vert_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
+        ax.set_xlabel('R [kpc]', fontsize = 14)
+        #ax.set_xlim(0, 4)
+        #ax.set_ylim(-3, 3)
+        ax.set_ylabel(r'log($\Sigma_{gas}$) [M$_{\odot}$ kpc$^{-2}$]', fontsize = 14)
+        ax.set_aspect(1./ax.get_data_ratio())
+        ax.set_title('c) Vertical surface density profile of gas', fontsize = 14)
+    
+    if (n==3):
+        for i in range(4):
+            plt.plot(rbins_gas[i], star_vert_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
+        ax.set_xlabel('R [kpc]', fontsize = 14)
+        #ax.set_xlim(0, 4)
+        #ax.set_ylim(-3, 3)
+        ax.set_ylabel(r'log($\Sigma_{gas}$) [M$_{\odot}$ kpc$^{-2}$]', fontsize = 14)
+        ax.set_aspect(1./ax.get_data_ratio())
+        ax.set_title('d) Vertical surface density profile of stars', fontsize = 14)
         
 plt.savefig('surf_dens3.pdf', bbox_inches = 'tight')
 

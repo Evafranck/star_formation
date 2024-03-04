@@ -60,9 +60,9 @@ def load_sim_sideon(mod):
     x.append(s.g['x'])
     y.append(s.g['y'])
 
-#model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
-#model = ['semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008'] 
-model = ['federrath_cstar_cut', 'threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008']
+model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+#model = ['threshold', 'threshold_alpha008', 'threshold_1e6_alpha008', 'semenov_alpha008','semenov_1e6_alpha008', 'semenov_cstar_cut'] 
+#model = ['threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut']
 #titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'platzhalter']
 titlelist = model
 
@@ -73,13 +73,13 @@ for m in model:
 for m in model:    
     load_sim_sideon(m)
 
-fig = plt.figure(figsize = (14.9, 3.85))
-gs0 = gd.GridSpec(2, 5, height_ratios=[1,0.3], width_ratios=[1,1,1,1,1.07])
+fig = plt.figure(figsize = (14, 3))
+gs0 = gd.GridSpec(2, 6, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1, 1, 1.07])
 gs0.update(hspace=0.00, wspace=0.00)
 
-for n in range(10):
+for n in range(2*len(model)):
     # face-on
-    if (n<5):
+    if (n<len(model)):
         ax = fig.add_subplot(gs0[n])
         hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='std', bins=bins, range = ((-30, 30), (-30,30)))
         im = ax.imshow(hist, extent=(-30,30,-30,30), cmap='CMRmap_r', vmin = 0.1, vmax = 55)
@@ -87,7 +87,7 @@ for n in range(10):
         ax.set_ylim(-19.99, 19.99)
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
         ax.set_xticklabels([])
-        if (n == 4):
+        if (n == len(model)-1):
             divider = make_axes_locatable(ax)
             cax = divider.append_axes('right', size = '5%', pad = 0.05)
             fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'$\sigma$ [km/s]', size=12)
@@ -98,7 +98,7 @@ for n in range(10):
             ax.set_yticklabels([])
 
     # side-on
-    if (n>4): 
+    else: 
         ax = fig.add_subplot(gs0[n])
         base = plt.gca().transData
         rot = transforms.Affine2D().rotate_deg(90)
@@ -109,12 +109,12 @@ for n in range(10):
         ax.set_xlim(-19.99, 19.99)
         ax.set_ylim(-5.99, 5.99)
         ax.set_xlabel('x [kpc]', fontsize = 12)        
-        if (n == 9):
+        if (n == 2*len(model)-1):
             divider = make_axes_locatable(ax)
             cax = divider.append_axes('right', size = '5%', pad = 0.05)
-            fig.colorbar(im, cax = cax, orientation='vertical')
-
-        if (n == 5):    
+            fig.colorbar(im, cax = cax, orientation='vertical')  
+            
+        if (n == len(model)):    
             ax.set_ylabel('z [kpc]', fontsize = 12)
         
         else:
@@ -122,5 +122,5 @@ for n in range(10):
 
 
 fig.suptitle('Gas velocity dispersion')
-plt.savefig('vdisp_map3.pdf', bbox_inches='tight')
+plt.savefig('vdisp_map.pdf', bbox_inches='tight')
 plt.clf()

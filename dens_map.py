@@ -68,8 +68,8 @@ def load_sim_sideon(mod):
 
 
 #model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-#model = ['semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
-model = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+#model = ['threshold', 'threshold_alpha008', 'threshold_1e6_alpha008', 'semenov_alpha008','semenov_1e6_alpha008', 'semenov_cstar_cut'] 
+model = ['threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut']
 titlelist = model
 for m in model:
     load_sim_faceon(m)

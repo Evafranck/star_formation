@@ -36,7 +36,7 @@ def starlog(filename):
     return np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
 
 eff = []
-bins = 200
+bins = 400
 
 
 def load_sim_faceon(mod):
@@ -45,7 +45,7 @@ def load_sim_faceon(mod):
     s = pynbody.load('../'+mod+'/halo.00128')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units() 
-    eff.append(g['epsilonform'])
+    eff.append(g['rhoform'])
     
 
 #model = ['federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
@@ -70,11 +70,11 @@ for n in range(4):
     #ax.set_xscale('log')
     if n > 5:
         ax.set_xlabel(r'$\epsilon_{\mathrm{ff}}$', fontsize = 15)
-    ax.set_xlim(0.01, 0.21)
+    ax.set_xlim(0.01, 10000)
     ax.tick_params(axis='x', labelsize=14)
     ax.tick_params(axis='y', labelsize=14)
     #ax.set_ylim(0, 50)
     ax.set_aspect(1./ax.get_data_ratio())
     ax.grid(ls = '--', lw = 0.1, color = 'grey')
 fig.tight_layout() 
-fig.savefig('efficiency_histogram.pdf', bbox_inches='tight')
+fig.savefig('rhoform_histogram.pdf', bbox_inches='tight')
