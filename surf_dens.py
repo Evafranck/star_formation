@@ -51,8 +51,8 @@ gas_vert_surf_dens = []
 
 #titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
 #simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-#simulations = ['threshold_alpha008','semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
-simulations = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+simulations = ['threshold_alpha008','threshold_1e6_alpha008', 'semenov_alpha008', 'semenov_1e6_alpha008', 'semenov_cstar_cut', 'federrath_alpha008', 'federrath_1e6_alpha008', 'federrath_cstar_cut'] 
+#simulations = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
 titlelist = simulations
 
 # Load a slice of the simulation snapshots faceon and sideon
@@ -129,7 +129,7 @@ for n in range(4):
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_title('d) Vertical surface density profile of stars', fontsize = 14)
         
-plt.savefig('surf_dens3.pdf', bbox_inches = 'tight')
+plt.savefig('surf_dens2.pdf', bbox_inches = 'tight')
 
 
 
