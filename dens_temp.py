@@ -21,9 +21,9 @@ mass_sf = []
 bins = 150
 #titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r' $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'Platzhalter']
 
-model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-#model = ['threshold', 'threshold_alpha008', 'threshold_1e6_alpha008', 'semenov_alpha008','semenov_1e6_alpha008', 'semenov_cstar_cut'] 
-#model = ['threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut']
+#model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+#model = ['threshold_alpha008', 'semenov_alpha008','semenov_1e6_alpha008', 'semenov_cstar_cut'] 
+model = ['threshold_1e6_alpha008', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut']
 titlelist = model
 
 def starlog(filename):
@@ -104,14 +104,14 @@ for m in model:
     load_sim_faceon(m)
     
 
-fig = plt.figure(figsize = (15,3))
-gs0 = gd.GridSpec(1, 6, figure=fig)
+fig = plt.figure(figsize = (10,3))
+gs0 = gd.GridSpec(1, 4, figure=fig)
 gs0.update(hspace=0.00, wspace=0.00)
 
 #fig2 = plt.figure()
 #axx = plt.subplot(111)
 
-for n in range(6):
+for n in range(4):
     ax = fig.add_subplot(gs0[n])
     hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=bins, range = ((-6, 8), (1.5,7.9)))
     im = ax.imshow(hist.T, origin='lower',cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(3.5), vmax = 10**(8)))
@@ -121,7 +121,7 @@ for n in range(6):
     level = [1e4, 1e10, 1e11, 5e11, 1e12]
     colors = ['green', 'yellow', 'pink', 'blue', 'red']
     strs = [ r'$10^4 M_{\rm sun}$',  r'$10^{10} M_{\rm sun}$',  r'$10^{11} M_{\rm sun}$', r'$5 \cdot 10^{11} M_{\rm sun}$', r'$10^{12} M_{\rm sun}$']
-    cont = ax.contour(histform.T,origin='lower',extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], colors=('r', 'green', 'blue', (1, 1, 0), '#afeeee', '0.5'), linewidths=0.5, levels = level)
+    cont = ax.contour(histform.T,origin='lower',extent=[xbins[0],xbins[-1],ybins[0],ybins[-1]], colors=('r', 'green', 'blue', 'orange', '#afeeee'), linewidths=0.5, levels = level)
     handles, labels = cont.legend_elements()
     ax.set_xlim(-6, 8)
     ax.set_ylim(1.5,7.9)
@@ -136,12 +136,12 @@ for n in range(6):
     else:
         ax.set_ylabel('log(T [K])', fontsize = 10)
     ax.set_aspect(1./ax.get_data_ratio())
+    if n == 0:
+        ax.legend(handles, [r'$10^4 M_{\rm sun}$',  r'$10^{10} M_{\rm sun}$',  r'$10^{11} M_{\rm sun}$', r'$5 \cdot 10^{11} M_{\rm sun}$', r'$10^{12} M_{\rm sun}$'], loc = 'lower right', fontsize = 6)
     if n == 2:
-        ax.legend(handles, [r'$10^4 M_{\rm sun}$',  r'$10^{10} M_{\rm sun}$',  r'$10^{11} M_{\rm sun}$', r'$5 \cdot 10^{11} M_{\rm sun}$', r'$10^{12} M_{\rm sun}$'], loc = 'lower right', fontsize = 7)
-    if n == 1:
-        cax = plt.axes([0.04, 0.2, 0.01, 0.2])
+        cax = plt.axes([0.06, 0.2, 0.01, 0.2])
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Mass [M$_{\odot}$]', size=8)
-        ax.legend(loc = 'lower right', fontsize = 7)
+        ax.legend(loc = 'lower left', fontsize = 6)
 fig.tight_layout()
 plt.savefig('dens_temp.pdf')
 #fig2.legend()
