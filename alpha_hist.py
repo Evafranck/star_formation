@@ -3,6 +3,7 @@
 import pynbody
 import pylab
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 import numpy as np
 from pynbody import units
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -38,7 +39,7 @@ def starlog(filename):
     return np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
 
 alpha = []
-bins = 100
+bins = 200
 
 
 def load_sim_faceon(mod):
@@ -69,6 +70,8 @@ for n in range(6):
         #ax.set_yticklabels([])
     ax.set_xlabel(r'$\alpha$', fontsize = 15)
     ax.set_xlim(0.01, 30)
+    plt.gca().yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+    plt.gca().tick_params(axis='y', which='both', bottom=True)
     #ax.tick_params(axis='x', labelsize=14)
     #ax.tick_params(axis='y', labelsize=14)
     #ax.set_ylim(0, 50)

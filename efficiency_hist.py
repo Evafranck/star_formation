@@ -9,6 +9,7 @@ from scipy import stats
 from scipy import constants
 import pynbody.filt as f
 import matplotlib.gridspec as gd
+from matplotlib.ticker import ScalarFormatter
 import pickle
 from matplotlib import colorbar
 from scipy.signal import find_peaks
@@ -36,7 +37,7 @@ def starlog(filename):
     return np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
 
 eff = []
-bins = 400
+bins = 200
 
 
 def load_sim_faceon(mod):
@@ -45,7 +46,7 @@ def load_sim_faceon(mod):
     s = pynbody.load('../'+mod+'/halo.00128')
     pynbody.analysis.angmom.faceon(s)
     s.physical_units() 
-    eff.append(g['rhoform'])
+    eff.append(g['epsilonform'])
     
 
 #model = ['federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
@@ -72,7 +73,13 @@ for n in range(6):
         #ax.set_yticklabels([])
     #ax.set_xscale('log')
     ax.set_xlabel(r'$\epsilon_{\mathrm{ff}}$')
-    ax.set_xlim(0.01, 10000)
+    #ax.set_xlim(0.01, 5000)
+    #ax.set_yscale('log')
+    #ax.set_ylim(0, 0.001)
+    #plt.gca().yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+    #plt.gca().tick_params(axis='y', which='both', bottom=True)
+    #plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+    #plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
     #ax.tick_params(axis='x', la14belsize=)
     #ax.tick_params(axis='y', labelsize=14)
     #ax.set_ylim(0, 50)
