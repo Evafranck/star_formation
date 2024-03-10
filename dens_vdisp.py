@@ -108,19 +108,19 @@ for n in range(6):
     ax = fig.add_subplot(gs0[n])
     #hist, xbin, ybin = np.histogram2d(np.log10(density[n]), vdisp[n], weights=temperature[n], bins=bins)#, range = ((-3, 10), (0, 0.2)))
     hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(np.log10(density[n]), np.log10(vdisp[n]), temperature[n], statistic='mean', bins=bins, range = ((-3, 3), (0.5, 3)))
-    im = ax.imshow(hist.T, origin='lower',cmap = 'coolwarm', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(2), vmax = 10**6))
+    im = ax.imshow(hist.T, origin='lower',cmap = 'coolwarm', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(3), vmax = 10**(4.5)))
     ax.set_xlim(-3, 2.5)
     ax.set_ylim(0.5,3)
     #ax.set_xscale('log')
     #ax.set_yscale('log')
     #ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y))) 
     ax.text(0.5, 0.9, titlelist[n], fontsize = 10, transform = ax.transAxes, horizontalalignment = 'center')
-    ax.set_xlabel(r'log($n_H$ [cm$^{-3}$])', fontsize = 10)
+    ax.set_xlabel(r'Gas Density log($n_H$) [cm$^{-3}$]', fontsize = 10)
     #if (n != 0):
     #    ax.set_yticklabels([])
     #    ax.tick_params(left=False)
     #else:
-    ax.set_ylabel('Velocity Dispersion', fontsize = 10)
+    ax.set_ylabel(r'Velocity Dispersion log($\sigma$) [km s$^{-1}$]', fontsize = 10)
     ax.set_aspect(1./ax.get_data_ratio())
     if n == 2:
         cax = plt.axes([0.12, 0.22, 0.01, 0.3])

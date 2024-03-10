@@ -11,6 +11,7 @@ from pynbody import array
 from pynbody import filt
 import os, struct
 from pynbody import util
+import scipy.stats
 
 density = []
 temp = []
@@ -114,6 +115,7 @@ gs0.update(hspace=0.00, wspace=0.00)
 for n in range(4):
     ax = fig.add_subplot(gs0[n])
     hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=bins, range = ((-6, 8), (1.5,7.9)))
+    #hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(np.log10(density[n]), np.log10(temp[n]), mass[n], statistic='mean', bins=bins, range = ((-6, 8), (1.5,7.9)))
     im = ax.imshow(hist.T, origin='lower',cmap = 'magma_r', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(3.5), vmax = 10**(8)))
 
     histform, xbins, ybins = np.histogram2d(np.log10(dens_sf[n]), np.log10(temp_sf[n]), weights=mass_sf[n], bins=bins, range = ((-6, 8), (1.5,7.9)))
@@ -139,7 +141,7 @@ for n in range(4):
     if n == 0:
         ax.legend(handles, [r'$10^4 M_{\rm sun}$',  r'$10^{10} M_{\rm sun}$',  r'$10^{11} M_{\rm sun}$', r'$5 \cdot 10^{11} M_{\rm sun}$', r'$10^{12} M_{\rm sun}$'], loc = 'lower right', fontsize = 6)
     if n == 2:
-        cax = plt.axes([0.06, 0.2, 0.01, 0.2])
+        cax = plt.axes([0.06, 0.2, 0.01, 0.3])
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Mass [M$_{\odot}$]', size=8)
         ax.legend(loc = 'lower left', fontsize = 6)
 fig.tight_layout()
