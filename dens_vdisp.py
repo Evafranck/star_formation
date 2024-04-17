@@ -20,12 +20,21 @@ vdisp = []
 temp = []
 temperature = []
 dens = []
-bins = 150
 #titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r' $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'Platzhalter']
 
-#model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-#model = ['threshold_alpha008', ] 
-model = ['federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'semenov_alpha008','semenov_1e6_alpha008', 'semenov_cstar_cut']
+model_name = 'federrath_padoan' # options: 'semenov', 'federrath_padoan', '1e6'
+if model_name == '1e6':
+    #models with 10**6 resolution
+    model = ['padoan_1e6_alpha008', 'federrath_1e6_alpha008', 'federrath_cstar_cut_1e6', 'semenov_1e6_alpha008', 'semenov_cstar_cut_1e6', 'evans_1e6_alpha008']
+    bins = 150
+elif model_name == 'semenov':
+    # models that are based on Semenov et al. (2016)
+    model = ['semenov_alpha008', 'semenov_cstar_cut', 'semenov_alpha008_tcr', 'semenov_alpha008_converging_flow', 'semenov_alpha008_tcool_cut', 'semenov_alpha008_tcool_cut_converging_flow']
+    bins = 150
+elif model_name == 'federrath_padoan':
+    # models that are based on Federrath & Klessen (2012) and Padoan et al. (2012)
+    model = ['federrath_alpha008', 'federrath_cstar_cut', 'padoan_alpha008']
+    bins = 150
 titlelist = model
 
 def starlog(filename):
@@ -63,6 +72,7 @@ def starlog2(filename):
     return np.fromstring(f.read(datasize), dtype=file_structure).byteswap()
 
 def load_sim_faceon(mod):
+    print(mod)
     s_all = pynbody.load('../' + mod+'/halo.00128')
     print('units', s_all.s['rho'].units)
     print('units', s_all.g['v_disp'].units)
@@ -97,36 +107,38 @@ def load_sim_faceon(mod):
 for m in model:
     load_sim_faceon(m)
 
-fig = plt.figure(figsize = (18,3))
-gs0 = gd.GridSpec(1, 6, figure=fig)
-#gs0.update(hspace=0.00, wspace=0.0)
+fig = plt.figure(figsize = (len(model)*2.5, 3))
+gs0 = gd.GridSpec(1, len(model), figure=fig)
+gs0.update(hspace=0.00, wspace=0.00)
 
 #fig2 = plt.figure()
 #axx = plt.subplot(111)
 
-for n in range(6):
+for n in range(len(model)):
     ax = fig.add_subplot(gs0[n])
     #hist, xbin, ybin = np.histogram2d(np.log10(density[n]), vdisp[n], weights=temperature[n], bins=bins)#, range = ((-3, 10), (0, 0.2)))
     hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(np.log10(density[n]), np.log10(vdisp[n]), temperature[n], statistic='mean', bins=bins, range = ((-3, 3), (0.5, 3)))
     im = ax.imshow(hist.T, origin='lower',cmap = 'coolwarm', extent=[xbin[0],xbin[-1],ybin[0],ybin[-1]], norm = matplotlib.colors.LogNorm(vmin = 10**(3), vmax = 10**(4.5)))
-    ax.set_xlim(-3, 2.5)
+    ax.set_xlim(-3.5, 2)
     ax.set_ylim(0.5,3)
     #ax.set_xscale('log')
     #ax.set_yscale('log')
     #ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: '{:.0%}'.format(y))) 
     ax.text(0.5, 0.9, titlelist[n], fontsize = 10, transform = ax.transAxes, horizontalalignment = 'center')
     ax.set_xlabel(r'Gas Density log($n_H$) [cm$^{-3}$]', fontsize = 10)
-    #if (n != 0):
-    #    ax.set_yticklabels([])
-    #    ax.tick_params(left=False)
-    #else:
-    ax.set_ylabel(r'Velocity Dispersion log($\sigma$) [km s$^{-1}$]', fontsize = 10)
     ax.set_aspect(1./ax.get_data_ratio())
+
+        
+    if (n != 0):
+        ax.set_yticklabels([])
+        ax.tick_params(left=False)
+    else:
+        ax.set_ylabel(r'Velocity Dispersion log($\sigma$) [km s$^{-1}$]', fontsize = 10)
     if n == 2:
         cax = plt.axes([0.12, 0.22, 0.01, 0.3])
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Temperature [K]', size=8)
         #ax.legend(loc = 'lower left', fontsize = 6)
 fig.tight_layout()
-plt.savefig('dens_vdisp.pdf')
+plt.savefig('dens_vdisp_' + model_name + '.pdf')
 #fig2.legend()
 #fig2.savefig('dens_hist.pdf', bbox_inches='tight')

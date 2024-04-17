@@ -34,7 +34,10 @@ plt.rcParams['patch.linewidth'] = 0.5
 key = []
 x = []
 y = []
-bins = 200
+model_name = '1e6' # options: 'hopkins', 'semenov', 'federrath_padoan', '1e6'
+x_y_lim = 14.99
+z_lim = x_y_lim * 0.266
+
 
 def load_sim_faceon(mod):
     s_all = pynbody.load('../'+mod+'/halo.00128')
@@ -59,10 +62,24 @@ def load_sim_sideon(mod):
     key.append(np.sqrt(s.g['v2'])) # geschwindigkeit
     x.append(s.g['x'])
     y.append(s.g['y'])
-
-model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-#model = ['threshold', 'threshold_alpha008', 'threshold_1e6_alpha008', 'semenov_alpha008','semenov_1e6_alpha008', 'semenov_cstar_cut'] 
-#model = ['threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut']
+    
+if model_name == '1e6':
+    #models with 10**6 resolution
+    model = ['threshold_1e6_alpha008', 'padoan_1e6_alpha008', 'federrath_1e6_alpha008', 'federrath_cstar_cut_1e6', 'semenov_1e6_alpha008', 'semenov_cstar_cut_1e6', 'evans_1e6_alpha008']
+    bins = 300
+elif model_name == 'hopkins':
+    # models that are based on Hopkins et al. (2013)
+    model = ['threshold', 'hopkins', 'hopkins_alpha', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+    bins = 200
+elif model_name == 'semenov':
+    # models that are based on Semenov et al. (2016)
+    model = ['threshold_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'semenov_alpha008_tcr', 'semenov_alpha008_converging_flow', 'semenov_alpha008_tcool_cut', 'semenov_alpha008_tcool_cut_converging_flow']
+    bins = 230
+elif model_name == 'federrath_padoan':
+    # models that are based on Federrath & Klessen (2012) and Padoan et al. (2012)
+    model = ['threshold_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'padoan_alpha008']
+    bins = 200
+    
 #titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'platzhalter']
 titlelist = model
 
@@ -73,8 +90,10 @@ for m in model:
 for m in model:    
     load_sim_sideon(m)
 
-fig = plt.figure(figsize = (14, 3))
-gs0 = gd.GridSpec(2, 6, height_ratios = [1, 0.3], width_ratios = [1, 1, 1, 1, 1, 1.07])
+fig = plt.figure(figsize = (len(model)*2.33, 2.95))
+width = np.ones(len(model))
+width[-1] = 1.077
+gs0 = gd.GridSpec(2, len(model), figure=fig, height_ratios = [1, 0.27], width_ratios = width)
 gs0.update(hspace=0.00, wspace=0.00)
 
 for n in range(2*len(model)):
@@ -83,8 +102,8 @@ for n in range(2*len(model)):
         ax = fig.add_subplot(gs0[n])
         hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='std', bins=bins, range = ((-30, 30), (-30,30)))
         im = ax.imshow(hist, extent=(-30,30,-30,30), cmap='CMRmap_r', vmin = 0.1, vmax = 55)
-        ax.set_xlim(-19.99, 19.99)
-        ax.set_ylim(-19.99, 19.99)
+        ax.set_xlim(-x_y_lim, x_y_lim)
+        ax.set_ylim(-x_y_lim, x_y_lim)
         ax.text(0.5, 0.88, titlelist[n], horizontalalignment='center', transform=ax.transAxes)
         ax.set_xticklabels([])
         if (n == len(model)-1):
@@ -106,8 +125,8 @@ for n in range(2*len(model)):
         hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(x[n], y[n], key[n], statistic='std', bins=bins, range = ((-30, 30), (-30,30)))
         im = ax.imshow(hist, extent=(-30,30,-30,30), cmap='CMRmap_r', transform = rot+base, vmin = 0, vmax = 55)
         ax.set_aspect(1./ax.get_data_ratio())
-        ax.set_xlim(-19.99, 19.99)
-        ax.set_ylim(-5.99, 5.99)
+        ax.set_xlim(-x_y_lim, x_y_lim)
+        ax.set_ylim(-z_lim, z_lim)
         ax.set_xlabel('x [kpc]', fontsize = 12)        
         if (n == 2*len(model)-1):
             divider = make_axes_locatable(ax)
@@ -122,5 +141,5 @@ for n in range(2*len(model)):
 
 
 fig.suptitle('Gas velocity dispersion')
-plt.savefig('vdisp_map.pdf', bbox_inches='tight')
+plt.savefig('vdisp_map_' + model_name + '.pdf', bbox_inches='tight')
 plt.clf()

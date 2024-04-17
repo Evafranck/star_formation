@@ -24,19 +24,26 @@ G = 6.7*10**(-11)*units.m**3/(units.kg*units.s**2)
 t_ff = 1e8 #np.sqrt(3*np.pi/(32*G.in_units('pc**3 Msol**-1 yr**-2')*x)) # in yr
 SFR = x*10**6/t_ff # in Msol/yr/kpc^2
 
+model_name = 'federrath_padoan' # options: 'hopkins', 'semenov', 'federrath_padoan', '1e6'
+if model_name == '1e6':
+    #models with 10**6 resolution
+    model = ['threshold_1e6_alpha008', 'padoan_1e6_alpha008', 'federrath_1e6_alpha008', 'federrath_cstar_cut_1e6', 'semenov_1e6_alpha008', 'semenov_cstar_cut_1e6', 'evans_1e6_alpha008']
 
-# Create a list of simulation paths
-#simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan']
+elif model_name == 'hopkins':
+    # models that are based on Hopkins et al. (2013)
+    model = ['threshold', 'hopkins', 'hopkins_alpha', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
 
+elif model_name == 'semenov':
+    # models that are based on Semenov et al. (2016)
+    model = ['threshold_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'semenov_alpha008_tcr', 'semenov_alpha008_converging_flow', 'semenov_alpha008_tcool_cut', 'semenov_alpha008_tcool_cut_converging_flow']
 
-# Create a list of simulation labels and colors
-#sim_labels = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
-#colorlist = ['blue','orange', 'green', 'red', 'purple']
-#'threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan',
-#simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-simulations = ['threshold_alpha008', 'threshold_1e6_alpha008','semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
-#simulations = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-sim_labels = simulations
+elif model_name == 'federrath_padoan':
+    # models that are based on Federrath & Klessen (2012) and Padoan et al. (2012)
+    model = ['threshold_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'padoan_alpha008']
+
+    
+simulations = model
+sim_labels = model
 symbols = ["+", "x", "o", "s", "D", "v", "D", "v"]
 
 # Calculate the Kennicutt-Schmidt law for a given simulation (modified from pynbody documentation)
@@ -125,5 +132,5 @@ plt.legend(fontsize = 14)
 plt.title('Kennicutt-Schmidt-relation', fontsize = 16)
 plt.tight_layout()
 plt.show()
-plt.savefig('KS_law2.pdf', bbox_inches='tight')
+plt.savefig('KS_law_' + model_name + '.pdf', bbox_inches='tight')
 

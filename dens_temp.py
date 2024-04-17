@@ -19,13 +19,27 @@ mass = []
 dens_sf = []
 temp_sf = []
 mass_sf = []
-bins = 150
+model_name = 'hopkins' # options: 'hopkins', 'semenov', 'federrath_padoan', '1e6'
+
+if model_name == '1e6':
+    #models with 10**6 resolution
+    model = ['threshold_1e6_alpha008', 'padoan_1e6_alpha008', 'federrath_1e6_alpha008', 'federrath_cstar_cut_1e6', 'semenov_1e6_alpha008', 'semenov_cstar_cut_1e6', 'evans_1e6_alpha008']
+    bins = 150
+elif model_name == 'hopkins':
+    # models that are based on Hopkins et al. (2013)
+    model = ['threshold', 'hopkins', 'hopkins_alpha', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+    bins = 200
+elif model_name == 'semenov':
+    # models that are based on Semenov et al. (2016)
+    model = ['threshold_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'semenov_alpha008_tcr', 'semenov_alpha008_converging_flow', 'semenov_alpha008_tcool_cut', 'semenov_alpha008_tcool_cut_converging_flow']
+    bins = 150
+elif model_name == 'federrath_padoan':
+    # models that are based on Federrath & Klessen (2012) and Padoan et al. (2012)
+    model = ['threshold_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'padoan_alpha008']
+    bins = 250 
+titlelist = model
 #titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r' $\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)', 'Platzhalter']
 
-#model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-#model = ['threshold_alpha008', 'semenov_alpha008','semenov_1e6_alpha008', 'semenov_cstar_cut'] 
-model = ['threshold_1e6_alpha008', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut']
-titlelist = model
 
 def starlog(filename):
     f = util.open_(filename, "rb")
@@ -105,14 +119,14 @@ for m in model:
     load_sim_faceon(m)
     
 
-fig = plt.figure(figsize = (10,3))
-gs0 = gd.GridSpec(1, 4, figure=fig)
+fig = plt.figure(figsize = (len(model)*2.5, 3))
+gs0 = gd.GridSpec(1, len(model), figure=fig)
 gs0.update(hspace=0.00, wspace=0.00)
 
 #fig2 = plt.figure()
 #axx = plt.subplot(111)
 
-for n in range(4):
+for n in range(len(model)):
     ax = fig.add_subplot(gs0[n])
     hist, xbin, ybin = np.histogram2d(np.log10(density[n]), np.log10(temp[n]), weights=mass[n], bins=bins, range = ((-6, 8), (1.5,7.9)))
     #hist, xbin, ybin, binnum = scipy.stats.binned_statistic_2d(np.log10(density[n]), np.log10(temp[n]), mass[n], statistic='mean', bins=bins, range = ((-6, 8), (1.5,7.9)))
@@ -129,7 +143,7 @@ for n in range(4):
     ax.set_ylim(1.5,7.9)
     ax.vlines(-1.8, 1.5, 7.9, ls = '-', color = 'grey', linewidths = 0.5, label = r'0.01% of $n_{\rm th}$') # 0.01% of density threshold (10 particles/cm^3)
     ax.vlines(1, 1.5, 7.9, ls = '--', color = 'grey', linewidths = 1, label = r'$n_{\rm th}$') # density threshold (10 particles/cm^3)
-    ax.hlines(3.5, -6, 8, ls = ':', color = 'grey', lw = 0.5, label = r'T = $3.5 \cdot 10^4$ K') # separates hot and cold gas 
+    ax.hlines(4, -6, 8, ls = ':', color = 'grey', lw = 0.5, label = r'T = $10^4$ K') # separates hot and cold gas 
     ax.text(0.5, 0.9, titlelist[n], fontsize = 10, transform = ax.transAxes, horizontalalignment = 'center')
     ax.set_xlabel(r'log($n_H$ [cm$^{-3}$])', fontsize = 10)
     if (n != 0):
@@ -145,6 +159,6 @@ for n in range(4):
         fig.colorbar(im, cax = cax, orientation='vertical').set_label(label = r'Mass [M$_{\odot}$]', size=8)
         ax.legend(loc = 'lower left', fontsize = 6)
 fig.tight_layout()
-plt.savefig('dens_temp.pdf')
+plt.savefig('dens_temp_' + model_name + '.pdf')
 #fig2.legend()
 #fig2.savefig('dens_hist.pdf', bbox_inches='tight')

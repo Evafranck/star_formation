@@ -113,8 +113,25 @@ def sfh(sim, filename=None, massform=True, clear=False, legend=False,
 #labellist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
 #colorlist = ['blue','orange', 'green', 'red', 'purple']
 #model = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-model = ['threshold_alpha008','semenov_1e6_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'federrath_1e6_alpha008', 'federrath_alpha008', 'federrath_cstar_cut'] 
-#model = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+
+model_name = '1e6' # options: 'hopkins', 'semenov', 'federrath_padoan', '1e6'
+if model_name == '1e6':
+    #models with 10**6 resolution
+    model = ['threshold_1e6_alpha008', 'padoan_1e6_alpha008', 'federrath_1e6_alpha008', 'federrath_cstar_cut_1e6', 'semenov_1e6_alpha008', 'semenov_cstar_cut_1e6', 'evans_1e6_alpha008']
+
+elif model_name == 'hopkins':
+    # models that are based on Hopkins et al. (2013)
+    model = ['threshold', 'hopkins', 'hopkins_alpha', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+
+elif model_name == 'semenov':
+    # models that are based on Semenov et al. (2016)
+    model = ['threshold_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'semenov_alpha008_tcr', 'semenov_alpha008_converging_flow', 'semenov_alpha008_tcool_cut', 'semenov_alpha008_tcool_cut_converging_flow']
+
+elif model_name == 'federrath_padoan':
+    # models that are based on Federrath & Klessen (2012) and Padoan et al. (2012)
+    model = ['threshold_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'padoan_alpha008']
+
+    
 labellist = model
 
 
@@ -131,5 +148,5 @@ for n in range(len(model)):
     s.physical_units()
     sfh(s, label = labellist[n], lw = 1) #, color = colorlist[n])
 plt.legend(fontsize = 14)
-plt.savefig('SFH_time2.pdf', bbox_inches = 'tight')
+plt.savefig('SFH_time_' + model_name + '.pdf', bbox_inches = 'tight')
 

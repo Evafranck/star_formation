@@ -49,11 +49,25 @@ star_vert_surf_dens = []
 gas_vert_surf_dens = []
 
 
-#titlelist = ['Threshold-based model', 'Federrath & Klessen (2012)', 'Hopkins et al. (2013) with' + '\n' + 'efficiency of Padoan et al. (2012)', 'Hopkins et al. (2013) with' + '\n' + r'$\alpha_{\mathrm{vir}}$ threshold', r'Hopkins et al. (2013) with ' + '\n' + r'$\alpha_{\mathrm{vir}}$ of Padoan et al. (2012)']
-#simulations = ['threshold', 'federrath', 'hopkins', 'hopkins_alpha', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-simulations = ['threshold_alpha008','threshold_1e6_alpha008', 'semenov_alpha008', 'semenov_1e6_alpha008', 'semenov_cstar_cut', 'federrath_alpha008', 'federrath_1e6_alpha008', 'federrath_cstar_cut'] 
-#simulations = ['threshold_alpha008', 'threshold_1e6_alpha008', 'hopkins_alpha_padoan_alpha008', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
-titlelist = simulations
+model_name = '1e6' # options: 'hopkins', 'semenov', 'federrath_padoan', '1e6'
+if model_name == '1e6':
+    #models with 10**6 resolution
+    model = ['threshold_1e6_alpha008', 'padoan_1e6_alpha008', 'federrath_1e6_alpha008', 'federrath_cstar_cut_1e6', 'semenov_1e6_alpha008', 'semenov_cstar_cut_1e6', 'evans_1e6_alpha008']
+
+elif model_name == 'hopkins':
+    # models that are based on Hopkins et al. (2013)
+    model = ['threshold', 'hopkins', 'hopkins_alpha', 'hopkins_alpha008', 'hopkins_alpha_padoan', 'hopkins_alpha_alpha008']
+
+elif model_name == 'semenov':
+    # models that are based on Semenov et al. (2016)
+    model = ['threshold_alpha008', 'semenov_alpha008', 'semenov_cstar_cut', 'semenov_alpha008_tcr', 'semenov_alpha008_converging_flow', 'semenov_alpha008_tcool_cut', 'semenov_alpha008_tcool_cut_converging_flow']
+
+elif model_name == 'federrath_padoan':
+    # models that are based on Federrath & Klessen (2012) and Padoan et al. (2012)
+    model = ['threshold_alpha008', 'federrath_alpha008', 'federrath_cstar_cut', 'padoan_alpha008']
+
+titlelist = model
+simulations = model
 
 # Load a slice of the simulation snapshots faceon and sideon
 def load_sim_faceon(mod):
@@ -89,7 +103,7 @@ gs0 = gd.GridSpec(1, 4, figure=fig, width_ratios = [1, 1, 1, 1])
 for n in range(4):
     ax = fig.add_subplot(gs0[n])  
     if (n==0):
-        for i in range(8):
+        for i in range(len(model)):
             plt.plot(rbins[i], star_surf_dens[i],  label = titlelist[i], lw=1) #, c = colorlist[i], ls = linestyle[i])
         ax.set_xlabel('R [kpc]', fontsize = 14)
         #ax.set_xlim(0, 19)
@@ -100,7 +114,7 @@ for n in range(4):
         ax.set_title('a) Radial surface density profile of stars', fontsize = 14)
         
     if (n==1):
-        for i in range(8):
+        for i in range(len(model)):
             plt.plot(rbins_gas[i], gas_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
         ax.set_xlabel('R [kpc]', fontsize = 14)
         #ax.set_xlim(0, 4)
@@ -110,7 +124,7 @@ for n in range(4):
         ax.set_title('b) Radial surface density profile of gas', fontsize = 14)
         
     if (n==2):
-        for i in range(8):
+        for i in range(len(model)):
             plt.plot(zbins_gas[i], gas_vert_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
         ax.set_xlabel('z [kpc]', fontsize = 14)
         #ax.set_xlim(0, 4)
@@ -120,7 +134,7 @@ for n in range(4):
         ax.set_title('c) Vertical surface density profile of gas', fontsize = 14)
     
     if (n==3):
-        for i in range(6):
+        for i in range(len(model)):
             plt.plot(zbins_gas[i], star_vert_surf_dens[i], lw = 1) #, c = colorlist[i], ls = linestyle[i])
         ax.set_xlabel('z [kpc]', fontsize = 14)
         #ax.set_xlim(0, 4)
@@ -129,7 +143,7 @@ for n in range(4):
         ax.set_aspect(1./ax.get_data_ratio())
         ax.set_title('d) Vertical surface density profile of stars', fontsize = 14)
         
-plt.savefig('surf_dens2.pdf', bbox_inches = 'tight')
+plt.savefig('surf_dens_' + model_name + '.pdf', bbox_inches = 'tight')
 
 
 
